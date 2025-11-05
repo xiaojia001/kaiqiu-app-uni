@@ -4,6 +4,9 @@
 			<text class="text-#E6326E" v-if="row.role==5">*</text>
 			<text>{{row.name}}</text>
 		</template>
+		<template #birthyear="{row}">
+			<text>{{row.birthyear==0?'':row.birthyear}}</text>
+		</template>
 	</zb-table>
 </template>
 
@@ -15,52 +18,57 @@
 	})
 	const columns = [{
 			type: 'index',
-			label: '#',
+			label: '序号',
 			width: uni.upx2px(70),
-			align: 'center',
+			align: 'center'
 		},
 		{
 			type: 'slot',
 			name: 'realname',
-			label: '名称',
+			label: '姓名',
 			width: uni.upx2px(160),
-			fixed: 'left',
 			align: 'center'
 		},
 		{
-			name: 'username2',
-			label: '昵称',
+			name: 'score',
+			label: '当前积分',
 			align: 'center',
-			width: uni.upx2px(160),
+			width: uni.upx2px(110),
+		},
+		{
+			name: 'maxscore',
+			label: '最高积分',
+			align: 'center',
+			width: uni.upx2px(110),
+		},
+		{
+			name: 'resideprovince',
+			label: '省份',
+			align: 'center',
+			width: uni.upx2px(120),
 		},
 		{
 			name: 'sex',
 			label: '性别',
+			align: 'center',
+			width: uni.upx2px(80),
 			filters: {
 				1: '男',
 				2: '女'
 			},
-			align: 'center',
-			width: uni.upx2px(76),
 		},
 		{
-			name: 'score',
-			label: '积分',
+			name: 'birthyear',
+			type: 'slot',
+			label: '生于',
 			align: 'center',
-			width: uni.upx2px(100),
+			width: uni.upx2px(80),
 		},
-		{
-			name: 'resideprovince',
-			label: '地区',
-			align: 'center',
-			width: uni.upx2px(140),
-			emptyString: ' '
-		}
 	];
 
 	function setCellHeaderStyle({ column, columnIndex }) {
 		return {
-			fontSize: '28rpx',
+			fontSize: '24rpx',
 			paddingLeft: '0px',
 			paddingRight: '0px'
 		};
@@ -68,7 +76,7 @@
 
 	function setCellStyle({ row, column, rowIndex, columnIndex }) {
 		let obj = {
-			fontSize: '28rpx',
+			fontSize: '24rpx',
 			paddingLeft: '0px',
 			paddingRight: '0px'
 		};

@@ -6,10 +6,11 @@
 				<view class="pt-60rpx pb-30rpx px-30rpx text-center space-y-10rpx">
 					<text class="text-40rpx font-bold">开球网APP</text>
 					<text class="text-gray-500 dark:text-gray-400 text-26rpx ml-10rpx">diy版</text>
-					<view class="mt-40rpx flex justify-center space-x-20rpx">
+					<view class="mt-40rpx f-c-c">
 						<view class="px-20rpx py-10rpx bg-blue-300 text-white rounded-20rpx text-24rpx">
-							版本 {{version}}
+							版本 {{version}} 
 						</view>
+						<uni-link class="ml-10rpx" :href="url" color="#4F86EC" text="检查更新"></uni-link>
 					</view>
 				</view>
 			</view>
@@ -76,8 +77,12 @@
 
 <script setup>
 	const version = ref('')
+	const url = 'https://github.com/xiaojia001/kaiqiu-app-uni/releases/latest'
 	onLoad(() => {
 		const { appVersion } = uni.getSystemInfoSync()
 		version.value = appVersion
 	})
+	function goReleaseWebPage(){
+		uni.openUrl
+	}
 </script>
