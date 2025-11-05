@@ -1,0 +1,179 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/main/main",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTextStyle": "black",
+				"app-plus": {
+					"bounce": "none",
+					"scrollIndicator": "none"
+				}
+			}
+		},
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/login/login",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+
+		{
+			"path": "pages/main/my",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/user/user",
+			"style": {
+				"navigationBarTitleText": "个人主页"
+			}
+		},
+		{
+			"path": "pages/user/eventHis",
+			"style": {
+				"navigationBarTitleText": "参赛记录"
+			}
+		},
+		{
+			"path": "pages/event/eventMain",
+			"style": {
+				"navigationBarTitleText": "赛事详情",
+				"navigationBarBackgroundColor": "#F89703"
+			}
+		},
+		{
+			"path": "pages/event/memberList",
+			"style": {
+				"navigationBarTitleText": "参赛名单",
+				"navigationBarBackgroundColor": "#FFFEFF",
+				"navigationBarTextStyle": "black"
+
+			}
+		},
+		{
+			"path": "pages/main/selectCityPage",
+			"style": {
+				"navigationBarTitleText": "城市选择"
+			}
+		},
+		{
+			"path": "pages/match/matchInfo",
+			"style": {
+				"navigationBarTitleText": "对战详情",
+				"navigationBarBackgroundColor": "#F89703"
+			}
+		},
+		{
+			"path": "pages/user/followPlayers",
+			"style": {
+				"navigationBarTitleText": "我的关注"
+			}
+		},
+		{
+			"path": "pages/search/searchIndex",
+			"style": {
+				"navigationBarTitleText": "搜索"
+			}
+		},
+		{
+			"path": "pages/search/gym",
+			"style": {
+				"navigationBarTitleText": "球馆详情",
+				"navigationBarBackgroundColor": "#F89703"
+			}
+		},
+		{
+			"path": "pages/setScore/group",
+			"style": {
+				"navigationBarTitleText": "小组赛比分",
+				"navigationBarBackgroundColor": "#FFFEFF",
+				"navigationBarTextStyle": "black",
+				"navigationStyle": "custom",
+				"app-plus": {
+					"bounce": "none",
+					"scrollIndicator": "none"
+				}
+			}
+		},
+		{
+			"path": "pages/setScore/ttGame",
+			"style": {
+				"navigationBarTitleText": "淘汰赛比分",
+				"navigationBarBackgroundColor": "#FFFEFF",
+				"navigationBarTextStyle": "black"
+			}
+		},
+		{
+			"path": "pages/search/topSearch",
+			"style": {
+				"navigationBarTitleText": "排行榜",
+				"navigationBarBackgroundColor": "#FFFEFF",
+				"navigationBarTextStyle": "black"
+			}
+		},
+		{
+			"path": "pages/search/top100Data",
+			"style": {
+				"navigationBarTitleText": "排行榜",
+				"navigationBarBackgroundColor": "#FFFEFF",
+				"navigationBarTextStyle": "black"
+			}
+		},
+		{
+			"path": "pages/search/rank",
+			"style": {
+				"navigationBarTitleText": "积分排行",
+				"navigationBarBackgroundColor": "#FFFEFF",
+				"navigationBarTextStyle": "black",
+				"app-plus": {
+					"bounce": "none",
+					"scrollIndicator": "none"
+				}
+			}
+		},
+		{
+			"path" : "pages/main/about",
+			"style" : 
+			{
+				"navigationBarTitleText" : "关于"
+			}
+		}
+	],
+	"tabBar": {
+		"midButton": {
+			"width": "70px",
+			"height": "70px",
+			"backgroundImage": "/static/keji.png",
+			"iconWidth": "40px"
+			// "text": "查询"
+		},
+		"list": [{
+				"pagePath": "pages/main/main",
+				"iconPath": "/static/home.png",
+				"selectedIconPath": "/static/home-ed.png",
+				"text": "主页"
+			},
+			{
+				"pagePath": "pages/main/my",
+				"iconPath": "/static/user.png",
+				"selectedIconPath": "/static/user-ed.png",
+				"text": "我的"
+			}
+		]
+	},
+	"globalStyle": {
+		"navigationBarTextStyle": "white",
+		"navigationBarTitleText": "开球网",
+		"navigationBarBackgroundColor": "#248DFF",
+		"backgroundColor": "#F2F0F2"
+	},
+	"uniIdRouter": {}
+}

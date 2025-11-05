@@ -1,0 +1,6 @@
+# 排除 unpackage 文件夹下的所有内容
+unpackage/*
+# 不排除 unpackage/res 文件夹及其子文件和子文件夹
+!unpackage/res/
+!unpackage/res/**
+/node_modules
