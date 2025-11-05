@@ -147,7 +147,7 @@
 		// 		icon: 'none'
 		// 	})
 		// }
-		if (!city && (quickTags || distanceIndex.value > 0)) {
+		if (!city && (quickTags || distanceIndex.value > 0 || dateRangeStr.value)) {
 			return uni.showToast({
 				title: '请选择所在城市',
 				icon: 'none'
