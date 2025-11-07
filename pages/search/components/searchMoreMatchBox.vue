@@ -8,7 +8,9 @@
 						<text v-if="dateRangeStr">{{dateRangeStr}}</text>
 						<text v-else class="text-#999">不限</text>
 					</view>
-					<uni-icons v-if="dateRangeStr" type="clear" @click.stop="dateRange=['','']"></uni-icons>
+					<view v-if="dateRangeStr" @click.stop="dateRange=['','']">
+						<uni-icons type="clear"></uni-icons>
+					</view>
 					<text v-else class="text-#77B980" @click.stop="selectToday">今日</text>
 				</view>
 			</view>
@@ -19,7 +21,9 @@
 						<text v-if="crtCity.name">{{crtCity.name}}</text>
 						<text v-else class="text-#999">不限</text>
 					</view>
-					<uni-icons v-if="crtCity.name" type="clear" @click.stop="clearCity"></uni-icons>
+					<view v-if="crtCity.name" @click.stop="clearCity">
+						<uni-icons type="clear"></uni-icons>
+					</view>
 					<text v-else class="text-#77B980" @click.stop="selectCrtCity">当前城市</text>
 				</view>
 			</view>
@@ -86,7 +90,11 @@
 	}
 
 	function confirm(e) {
+		console.log(e);
 		const { before, after } = e.range
+		if (!after) {
+			return dateRange.value = [before, before]
+		}
 		if (dayjs(before).isAfter(dayjs(after))) {
 			return dateRange.value = [after, before]
 		}
