@@ -23,16 +23,16 @@
 					<view class="games-container relative" :style="{ height: calcMaxHeight + 'rpx' }">
 						<template v-for="(game, gameIndex) in roundData.games" :key="gameIndex">
 							<!-- 单场比赛卡片 -->
-							<view class="game-card" @click="goScoreDetail(game)">
+							<view class="game-card">
 								<!-- 选手1 -->
-								<view class="player player-1" :class="{ winner: game.winner1 }">
+								<view class="player player-1" :class="{ winner: game.winner1 }" @click.stop="clickName(game,1)">
 									<view class="player-name">{{ game.username1 }}</view>
 									<view class="player-score">{{ game.result1 }}</view>
 								</view>
 								<!-- 对战分隔线 -->
 								<view class="vs-line"></view>
 								<!-- 选手2 -->
-								<view class="player player-2" :class="{ winner: game.winner2 }">
+								<view class="player player-2" :class="{ winner: game.winner2 }"  @click.stop="clickName(game,2)">
 									<view class="player-name">{{ game.username2 }}</view>
 									<view class="player-score">{{ game.result2 }}</view>
 								</view>
@@ -59,7 +59,10 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { goMatchDetailByTTReq } from '@/utils/goPage.js';
+import { goMatchDetailByTTReq, goUserPageByUid } from '@/utils/goPage.js';
+
+const emit = defineEmits('clickName')
+
 // 1. 接收父组件传递的赛事数据（此处直接使用提供的原始数据，实际可通过props接收）
 const props = defineProps({
 	matchData: {
@@ -160,6 +163,13 @@ onMounted(() => {
 		});
 	});
 });
+
+function clickName(game,index=1){
+	if(game['teamid' + index]){
+		return emit('clickName',game['username' + index])
+	}
+	goScoreDetail(game)
+}
 </script>
 
 <style scoped>

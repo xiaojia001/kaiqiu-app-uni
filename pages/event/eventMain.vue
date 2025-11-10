@@ -42,24 +42,33 @@
 			</view>
 		</view>
 		<mainDetail v-show="activeTab==0" :eventDetail="eventDetail" :crtItem="crtItem" :activeItemId="activeItemId" @goMemberList="goMemberList" />
-		<groupDetail v-if="activeTab==1" :eventDetail="eventDetail" :crtItem="crtItem" :activeItemId="activeItemId" />
-		<scoreDetail v-if="activeTab==2" :eventDetail="eventDetail" :crtItem="crtItem" :activeItemId="activeItemId" />
+		<groupDetail v-if="activeTab==1" :eventDetail="eventDetail" :crtItem="crtItem" :activeItemId="activeItemId" @showTeamInfo="showTeamInfo" />
+		<scoreDetail v-if="activeTab==2" :eventDetail="eventDetail" :crtItem="crtItem" :activeItemId="activeItemId" @showTeamInfo="showTeamInfo" />
 		<scoreChange v-if="activeTab==3" :eventDetail="eventDetail" :crtItem="crtItem" :activeItemId="activeItemId" />
+		<uni-popup ref="teamPopup" type="center">
+			<view class="bg-#fff p20rpx rounded-20rpx">
+				<teamInfoTable :team="crtTeamList"></teamInfoTable>
+			</view>
+		</uni-popup>
 	</view>
 </template>
 
 <script setup>
-	import { getEventDetaiByIdAndLocation } from '@/api/event.js'
+	import { getEventDetaiByIdAndLocation, get_member_detail } from '@/api/event.js'
 	import { goGymDetailPage } from '@/utils/goPage.js'
 	import mainDetail from './components/mainDetail.vue'
 	import groupDetail from './components/groupDetail.vue'
 	import scoreDetail from './components/scoreDetail.vue'
 	import scoreChange from './components/scoreChange.vue'
+	import teamInfoTable from './components/teamInfoTable.vue'
 	import { computed } from 'vue'
 	const { location } = useStore('user')
 	const tabList = ['详情', '赛程', '成绩', '积分']
 	const eventDetail = ref({})
 	const subEventList = ref([])
+	const teamObj = ref({})
+	const crtTeamList = ref({ name: '', list: [] })
+	const teamPopup = ref(null)
 	let ifTT_obj = {}
 	const activeItemId = ref(null)
 	let crtId = ''
@@ -115,6 +124,29 @@
 			ifTT_obj = res.data?.ifTT ?? {}
 			if (subEventList.value.length && !activeItemId.value) {
 				activeItemId.value = subEventList.value[0].id
+				get_member_detail({
+					match_id: eventDetail.value.eventid,
+					id: activeItemId.value
+				}).then(res => {
+					const members = res.data?.list ?? []
+					let obj = members.reduce((all, crt) => {
+						if (crt.teamid) {
+							all.lastTeamid = crt.teamid
+							all.lastTeamname = crt.name
+							all[crt.teamid] = []
+							all[crt.name] = []
+						} else {
+							if (all.lastTeamid) {
+								all[all.lastTeamid].push(crt)
+								all[all.lastTeamname].push(crt)
+							}
+						}
+						return all
+					}, {})
+					Reflect.deleteProperty(obj, 'lastTeamname')
+					Reflect.deleteProperty(obj, 'lastTeamid')
+					teamObj.value = obj
+				})
 			}
 		})
 	}
@@ -123,6 +155,11 @@
 		url && uni.previewImage({
 			urls: [url]
 		})
+	}
+
+	function showTeamInfo(info) {
+		crtTeamList.value = { name: info, list: teamObj.value[info] ?? [] }
+		teamPopup.value.open()
 	}
 </script>
 

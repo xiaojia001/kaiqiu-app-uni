@@ -44,7 +44,7 @@
 				</template>
 			</view>
 		</view>
-		<ttGameInfo :key="activeItemId" v-if="ttgames.length" :matchData="ttgames"></ttGameInfo>
+		<ttGameInfo :key="activeItemId" v-if="ttgames.length" :matchData="ttgames" @clickName="teamName => emit('showTeamInfo', teamName)"></ttGameInfo>
 		<view v-if="ttdetailgames.length">
 			<view class="bg-#fffb85 f-c-c h70rpx border-1px border-solid border-#77B980" @click="showTtDetail=!showTtDetail">{{showTtDetail?'隐藏':'显示'}}淘汰赛详细成绩</view>
 			<template v-if="showTtDetail">
@@ -86,6 +86,7 @@
 	import ttGameInfo from './ttGameInfo.vue'
 	import { getAllResult, getAllHonors } from '@/api/event.js';
 	import { watch } from 'vue';
+	const emit = defineEmits(['showTeamInfo']);
 	const { userInfo } = useStore('user');
 	const isInit = ref(false)
 	const groupId = ref('');
@@ -295,7 +296,11 @@
 
 	function cellClick(row, index, column, i) {
 		if (column.name === 'newUsername') {
-			goUserPageByUid(row.uid)
+			if (row.teamname) {
+				emit('showTeamInfo', row.teamname)
+			} else {
+				goUserPageByUid(row.uid)
+			}
 		}
 		if (column.name.indexOf('col') >= 0 && row[column.name + '-info']) {
 			goMatchDetailByReq(row[column.name + '-info'])

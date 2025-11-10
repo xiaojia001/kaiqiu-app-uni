@@ -22,6 +22,7 @@
 	import { getGroups } from '@/api/event.js';
 	import { goUserPageByUid, goTTdetailPage, goGroupDetailPage } from '@/utils/goPage.js'
 	import { watch } from 'vue';
+	const emit = defineEmits(['showTeamInfo']);
 	const { userInfo } = useStore('user');
 	const groupId = ref('');
 	const groups = ref([]);
@@ -40,7 +41,7 @@
 			type: [String, Number]
 		}
 	});
-	
+
 	setTimeout(() => {
 		init();
 	}, 50)
@@ -121,7 +122,11 @@
 
 	function cellClick(row, index, column, i) {
 		if (column.name === 'newUsername') {
-			goUserPageByUid(row.uid)
+			if (row.teamname) {
+				emit('showTeamInfo', row.teamname)
+			} else {
+				goUserPageByUid(row.uid)
+			}
 		}
 	}
 
