@@ -154,7 +154,7 @@
 			groups.value = allGroups.groups[val];
 			honors.value = allHonors[val].filter((v) => v.uid != 0);
 			ttgames.value = allGroups.ttgames[val] ?? []
-			ttdetailgames.value = allGroups.ttdetailgames[val] ?? []
+			ttdetailgames.value = allGroups.ttdetailgames?.[val] ?? []
 		}
 	);
 
@@ -165,7 +165,7 @@
 				allGroups = res.data;
 				groups.value = res.data.groups[props.activeItemId] ?? [];
 				ttgames.value = res.data.ttgames[props.activeItemId] ?? []
-				ttdetailgames.value = res.data.ttdetailgames[props.activeItemId] ?? []
+				ttdetailgames.value = res.data.ttdetailgames?.[props.activeItemId] ?? []
 			}
 		}).finally(() => {
 			isInit.value = true

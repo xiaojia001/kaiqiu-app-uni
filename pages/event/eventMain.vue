@@ -2,7 +2,7 @@
 	<view class="text-#000">
 		<view class="top-bg">
 			<view class="poster-box bg-#fff">
-				<image class="w-full h-full" :src="eventDetail.poster" mode=""></image>
+				<image class="w-full h-full" :src="eventDetail.poster" mode="" @click="previewImage(eventDetail.poster)"></image>
 			</view>
 		</view>
 		<view class="mt42rpx bg-#fff px30rpx py20rpx">
@@ -116,6 +116,12 @@
 			if (subEventList.value.length && !activeItemId.value) {
 				activeItemId.value = subEventList.value[0].id
 			}
+		})
+	}
+
+	function previewImage(url) {
+		url && uni.previewImage({
+			urls: [url]
 		})
 	}
 </script>

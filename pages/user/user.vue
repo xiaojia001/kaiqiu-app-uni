@@ -2,8 +2,8 @@
 	<mescroll-body @init="mescrollInit" top="0" @down="downCallback" @up="upCallback" :down="{ bgColor: '#248DFF' }" :up="{ toTop: { src: '' } }">
 		<view class="bg-#E7E6E8">
 			<view class="f-c-c flex-col pt40rpx bg-#248DFF text-#fff">
-				<view class="w192rpx h192rpx rounded-91rpx bg-white">
-					<image class="w-full h-full rounded-91rpx" :src="userInfo?.realpic" mode=""></image>
+				<view class="w220rpx h220rpx rounded-half bg-white border-6rpx border-solid border-#ffffff">
+					<image class="w-full h-full rounded-half" :src="userInfo?.realpic" mode="" @click="previewImage(userInfo?.realpic)"></image>
 				</view>
 				<view class="mt14px flex items-center">
 					<text class="text-40rpx font-500 mr10rpx">{{ userInfo?.realname }}</text>
@@ -123,24 +123,24 @@
 				</view>
 			</view>
 			<view v-if="userInfo.path?.length" class="mt-4px p20rpx bg-#FFFEFF text-28rpx text-#8F8E96">
-					<view class="info-title">
-						{{userInfo.realname}}<text class="font-600 text-#248DFF mx4rpx">{{userInfo.pathNum}}阶</text>挑战世界冠军<text class="font-600 text-#248DFF mx4rpx">{{userInfo.champion}}</text>成功
-					</view>
-					<view class="mt6rpx">
-						<view v-for="(item,i) in userInfo.path" :key="i" class="flex justify-between items-center mt14px">
-							<view class="w140rpx h140rpx rounded-70rpx bg-white" @click="goUserPageByUid(item.uid1)">
-								<image class="w-full h-full rounded-70rpx" :src="item.face1" mode=""></image>
-							</view>
-							<view class="flex-1 flex flex-col f-c-c text-#999 text-24rpx">
-								<view class="text-#666 text-28rpx">{{item.realname1}} <text>{{item.result1}}:{{item.result2}}</text> {{item.realname2}}</view>
-								<view>{{item.title}}</view>
-								<view>{{item.dateline}} {{item.city}}</view>
-							</view>
-							<view class="w140rpx h140rpx rounded-70rpx bg-white" @click="goUserPageByUid(item.uid2)">
-								<image class="w-full h-full rounded-70rpx" :src="item.face2" mode=""></image>
-							</view>
+				<view class="info-title">
+					{{userInfo.realname}}<text class="font-600 text-#248DFF mx4rpx">{{userInfo.pathNum}}阶</text>挑战世界冠军<text class="font-600 text-#248DFF mx4rpx">{{userInfo.champion}}</text>成功
+				</view>
+				<view class="mt6rpx">
+					<view v-for="(item,i) in userInfo.path" :key="i" class="flex justify-between items-center mt14px">
+						<view class="w140rpx h140rpx rounded-70rpx bg-white" @click="goUserPageByUid(item.uid1)">
+							<image class="w-full h-full rounded-70rpx" :src="item.face1" mode=""></image>
+						</view>
+						<view class="flex-1 flex flex-col f-c-c text-#999 text-24rpx">
+							<view class="text-#666 text-28rpx">{{item.realname1}} <text>{{item.result1}}:{{item.result2}}</text> {{item.realname2}}</view>
+							<view>{{item.title}}</view>
+							<view>{{item.dateline}} {{item.city}}</view>
+						</view>
+						<view class="w140rpx h140rpx rounded-70rpx bg-white" @click="goUserPageByUid(item.uid2)">
+							<image class="w-full h-full rounded-70rpx" :src="item.face2" mode=""></image>
 						</view>
 					</view>
+				</view>
 			</view>
 			<view class="mt-4px p20rpx bg-#FFFEFF text-28rpx text-#8F8E96">
 				<view v-if="userInfo.allCities">
@@ -198,7 +198,7 @@
 		Top3WomanOfBeatUsernameScore: [],
 		TopPlayerUsernameScore: [],
 		allCities: [],
-		description:'',
+		description: '',
 		Top3OfBeatUsernameScore: [],
 		honors: [],
 		games: {},
@@ -486,6 +486,12 @@
 			showTags.value = (res.data ?? []).filter(v => v.count > 0)
 		})
 	}
+
+	function previewImage(url) {
+		url && uni.previewImage({
+			urls: [url]
+		})
+	}
 </script>
 
 <style scoped lang="scss">
@@ -507,11 +513,14 @@
 		position: relative;
 		border-left: 12rpx solid #248dff;
 	}
-	.city-gap{
+
+	.city-gap {
 		gap: 8rpx;
 	}
+
 	.e-tag-wrap {
 		gap: 20rpx;
+
 		.e-tag {
 			color: #fff;
 

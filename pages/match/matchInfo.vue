@@ -3,17 +3,17 @@
 		<view class="bg-#F89703 flex justify-between items-center px-40rpx pb20rpx">
 			<view class="flex justify-center items-center flex-col text28rpx text-#000">
 				<view class="w192rpx h192rpx rounded-91rpx bg-white">
-					<image class="w-full h-full rounded-91rpx" :src="current_game.headImg1" mode=""></image>
+					<image class="w-full h-full rounded-91rpx" :src="current_game.headImg1" mode="" @click="previewImage(current_game.headImg1)"></image>
 				</view>
-				<view class="mt-12px">{{current_game.username1}}({{current_game.realname1}})</view>
+				<view class="mt-12px" @click="goUserPageByUid(current_game.uid1)">{{current_game.username1}}({{current_game.realname1}})</view>
 				<view class="mt-8px text-24rpx text-#333">当前积分: {{current_game.score1}}</view>
 			</view>
 			<view class="text-#fff text-80rpx">vs</view>
 			<view class="flex justify-center items-center flex-col text28rpx text-#000">
 				<view class="w192rpx h192rpx rounded-91rpx bg-white">
-					<image class="w-full h-full rounded-91rpx" :src="current_game.headImg2" mode=""></image>
+					<image class="w-full h-full rounded-91rpx" :src="current_game.headImg2" mode="" @click="previewImage(current_game.headImg2)"></image>
 				</view>
-				<view class="mt-12px">{{current_game.username2}}({{current_game.realname2}})</view>
+				<view class="mt-12px" @click="goUserPageByUid(current_game.uid2)">{{current_game.username2}}({{current_game.realname2}})</view>
 				<view class="mt-8px text-24rpx text-#333">当前积分: {{current_game.score2}}</view>
 			</view>
 		</view>
@@ -172,6 +172,12 @@
 		if (column.name === 'bifen' && crtGameId.value !== row.gameid) {
 			goMatchDetailByGameid(row.gameid, true)
 		}
+	}
+
+	function previewImage(url) {
+		url && uni.previewImage({
+			urls: [url]
+		})
 	}
 </script>
 

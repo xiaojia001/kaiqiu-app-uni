@@ -15,7 +15,7 @@
 			<view class="p20rpx bg-#fff flex items-center text-32rpx text-#333">
 				个人积分变化(仅供参考)
 			</view>
-			<zb-table show-heade :columns="columnMe" :stripe="false" :fit="false" border :data="listMe" :cell-style="setStyleMe" :cell-header-style="setStyleMe">
+			<zb-table show-heade :columns="columnMe" :stripe="false" :fit="false" border :data="listMe" :cell-style="setStyleMe" :cell-header-style="setStyleMe" @cellClick="cellClick">
 				<template #result="{row}">
 					{{`${row.result1}:${row.result2}`}}
 				</template>
@@ -193,6 +193,12 @@
 
 	function rowClick({ uid }) {
 		uid && goUserPageByUid(uid)
+	}
+
+	function cellClick(row, index, column) {
+		if (column.name === 'username2') {
+			goUserPageByUid(row.uid2)
+		}
 	}
 
 	function showInfo() {

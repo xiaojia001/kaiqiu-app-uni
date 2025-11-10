@@ -3,7 +3,7 @@
 		<view class="text-#000">
 			<view class="top-bg bg-#fff">
 				<view class="poster-box bg-#fff">
-					<image class="w-full h-full" :src="gymDetail.pic" mode=""></image>
+					<image class="w-full h-full" :src="gymDetail.pic" mode="" @click="previewImage(gymDetail.pic)"></image>
 				</view>
 			</view>
 			<view class="pt42rpx bg-#fff px30rpx py20rpx">
@@ -44,22 +44,22 @@
 					<text class="info-title">近期赛事</text>
 				</view>
 				<!-- <view class="min-h-160rpx"> -->
-					<view class="flex p20rpx bg-#fff mb-14px relative box-b-border" v-for="(item, i) in list" :key="item.eventid" @click="goEventMainPage({eventid:item.eventid})">
-						<view v-if="item.grade" class="absolute z10 text-#e44225 bottom-60rpx text-50rpx f-c-c left-120rpx tuijian-box">推荐</view>
-						<view class="relative w162rpx h182rpx">
-							<view class="absolute top-0 left-0 z10 bg-#77b980 text-22rpx p2rpx text-#fff">{{ item.city }}</view>
-							<image class="w-full h-full" :src="item.poster" mode=""></image>
-						</view>
-						<view class="flex-1 ml-40rpx flex flex-col justify-between">
-							<view class="text-#52546D font-600 text-28rpx">{{ item.title }}</view>
-							<view class="text-22rpx text-#999">{{ item.starttime }} <text class="ml8rpx text-#E49B37">{{ item.status }}</text></view>
-							<view class="text-22rpx text-#999"><text class="mr6rpx truncate">比赛地点:</text>{{ item.arena_name }}</view>
-							<view class="flex items-center justify-between">
-								<text class="text-20rpx text-#999">{{ item.viewnum }}人浏览</text>
-								<view class="join-border text-20rpx text-#77B980">{{ item.membernum }}人参加</view>
-							</view>
+				<view class="flex p20rpx bg-#fff mb-14px relative box-b-border" v-for="(item, i) in list" :key="item.eventid" @click="goEventMainPage({eventid:item.eventid})">
+					<view v-if="item.grade" class="absolute z10 text-#e44225 bottom-60rpx text-50rpx f-c-c left-120rpx tuijian-box">推荐</view>
+					<view class="relative w162rpx h182rpx">
+						<view class="absolute top-0 left-0 z10 bg-#77b980 text-22rpx p2rpx text-#fff">{{ item.city }}</view>
+						<image class="w-full h-full" :src="item.poster" mode=""></image>
+					</view>
+					<view class="flex-1 ml-40rpx flex flex-col justify-between">
+						<view class="text-#52546D font-600 text-28rpx">{{ item.title }}</view>
+						<view class="text-22rpx text-#999">{{ item.starttime }} <text class="ml8rpx text-#E49B37">{{ item.status }}</text></view>
+						<view class="text-22rpx text-#999"><text class="mr6rpx truncate">比赛地点:</text>{{ item.arena_name }}</view>
+						<view class="flex items-center justify-between">
+							<text class="text-20rpx text-#999">{{ item.viewnum }}人浏览</text>
+							<view class="join-border text-20rpx text-#77B980">{{ item.membernum }}人参加</view>
 						</view>
 					</view>
+				</view>
 				<!-- </view> -->
 			</view>
 		</view>
@@ -139,13 +139,19 @@
 		popup.value.close()
 		uni.setClipboardData({
 			data,
-			success: () => {	
+			success: () => {
 				// uni.showToast({
 				// 	title: '已复制',
 				// 	icon: 'none'
 				// })
 			}
 		});
+	}
+
+	function previewImage(url) {
+		url && uni.previewImage({
+			urls: [url]
+		})
 	}
 </script>
 
