@@ -167,16 +167,16 @@
 						<template v-if="row.flag === '1'">
 							<view class="f-c-c flex-col h80rpx leading-[1.2]">
 								<text>{{ row.username1 }}</text>
-								<text>{{ row.username11 }}</text>
+								<text @click="goUserPageByUid(row.uid11)">{{ row.username11 }}</text>
 							</view>
 						</template>
 					</template>
 					<template #username2="{ row }">
-						<template v-if="row.flag === '0'">{{ row.username2 }}</template>
+						<template v-if="row.flag === '0'" @click="goUserPageByUid(row.uid2)">{{ row.username2 }}</template>
 						<template v-if="row.flag === '1'">
 							<view class="f-c-c flex-col h80rpx leading-[1.2]">
-								<text>{{ row.username2 }}</text>
-								<text>{{ row.username22 }}</text>
+								<text @click="goUserPageByUid(row.uid2)">{{ row.username2 }}</text>
+								<text @click="goUserPageByUid(row.uid22)">{{ row.username22 }}</text>
 							</view>
 						</template>
 					</template>
@@ -464,9 +464,9 @@
 	}
 
 	function cellClick(row, index, column) {
-		if (column.name === 'username2') {
-			return goUserPageByUid(row.uid2);
-		}
+		// if (column.name === 'username2') {
+		// 	return goUserPageByUid(row.uid2);
+		// }
 		if (column.name === 'bifen' && row.flag === '0') {
 			return goMatchDetailByGameid(row.gameid);
 		}
