@@ -1,7 +1,7 @@
 <template>
 	<view>
 		<view class="h100rpx px30rpx bg-#fff flex items-center relative">
-			<uni-easyinput prefixIcon="search" v-model="searchText" focus :placeholder="placeholder" @confirm="refresh" @focus="inputFocus" @blur="inputBlur"></uni-easyinput>
+			<uni-easyinput prefixIcon="search" v-model="searchText" :placeholder="placeholder" @confirm="refresh" @focus="inputFocus" @blur="inputBlur"></uni-easyinput>
 			<template v-if="tabIndex==0">
 				<view class="f-c-c ml26rpx text-28rpx" @click="showMore=!showMore">
 					<text class="mr6rpx" :class="[showSelcet?'text-#F89703':'']">筛选</text>
@@ -54,6 +54,16 @@
 	})
 	let isInit = false
 	const list = ref([])
+
+	onLoad(({ player }) => {
+		if (player) {
+			tabIndex.value = 2
+			searchText.value = player
+			setTimeout(() => {
+				refresh()
+			}, 500)
+		}
+	})
 
 	function tabChange(val) {
 		refresh()

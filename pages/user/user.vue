@@ -102,7 +102,7 @@
 				<view v-if="oftenPlayer.length">
 					<view class="info-title">经常交手:</view>
 					<view class="pl30rpx mt6rpx">
-						<view class="ml-20rpx" v-for="(item, i) in oftenPlayer" :key="i">{{ item }}</view>
+						<view class="ml-20rpx" v-for="(item, i) in oftenPlayer" :key="i" @click="goSearchPlayer(item)">{{ item }}</view>
 					</view>
 				</view>
 			</view>
@@ -189,7 +189,7 @@
 <script setup>
 	import { computed, shallowRef } from 'vue';
 	import { getAdvProfile, goFolloweeByUid, goCancelFolloweeByUid, getPageGamesByUid, getUserTags, getUserScores } from '@/api/user.js';
-	import { goUserPageByUid, goEventMainPage, goMatchDetailByGameid } from '@/utils/goPage.js';
+	import { goUserPageByUid, goEventMainPage, goMatchDetailByGameid, goSearchPlayerPage } from '@/utils/goPage.js';
 	import { onPageScroll, onReachBottom } from '@dcloudio/uni-app';
 	import useMescroll from '@/uni_modules/mescroll-uni/hooks/useMescroll.js';
 	const { mescrollInit, downCallback, getMescroll } = useMescroll(onPageScroll, onReachBottom); // 调用mescroll的hook
@@ -491,6 +491,10 @@
 		url && uni.previewImage({
 			urls: [url]
 		})
+	}
+
+	function goSearchPlayer(player) {
+		goSearchPlayerPage(player.split('(')[0])
 	}
 </script>
 

@@ -101,3 +101,9 @@ export function goRankPage() {
 		url: '/pages/search/rank'
 	})
 }
+
+export function goSearchPlayerPage(player) {
+	uni.navigateTo({
+		url: `/pages/search/searchIndex?player=${player}`
+	})
+}
