@@ -145,6 +145,24 @@
 			{
 				"navigationBarTitleText" : "关于"
 			}
+		},
+		{
+			"path" : "pages/signUp/preSignUp",
+			"style" : 
+			{
+				"navigationBarTitleText" : "报名比赛",
+				"navigationBarBackgroundColor": "#FFFEFF",
+				"navigationBarTextStyle": "black"
+			}
+		},
+		{
+			"path" : "pages/signUp/enterInfo",
+			"style" : 
+			{
+				"navigationBarTitleText" : "订单",
+				"navigationBarBackgroundColor": "#FFFEFF",
+				"navigationBarTextStyle": "black"
+			}
 		}
 	],
 	"tabBar": {

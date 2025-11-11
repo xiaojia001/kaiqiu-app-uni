@@ -107,3 +107,15 @@ export function goSearchPlayerPage(player) {
 		url: `/pages/search/searchIndex?player=${player}`
 	})
 }
+
+export function goPreSignUp({ itemid, eventid }) {
+	uni.navigateTo({
+		url: `/pages/signUp/preSignUp?itemid=${itemid}&eventid=${eventid}`
+	})
+}
+
+export function goEnterInfoPage(id) {
+	uni.navigateTo({
+		url: `/pages/signUp/enterInfo?id=${id}`
+	})
+}

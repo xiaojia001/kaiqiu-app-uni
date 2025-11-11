@@ -67,6 +67,9 @@ const http = new Request({
 http.interceptors.request.use(
 	(config) => {
 		config.header['Content-Type'] = 'application/x-www-form-urlencoded';
+		if (config.custom.ContentType) {
+			config.header['Content-Type'] = config.custom.ContentType;
+		}
 		// }
 		// if (config.custom.auth && !uni.getStorageSync('token')) {
 		// 	// showAuthModal();

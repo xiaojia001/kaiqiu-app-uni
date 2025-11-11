@@ -5,7 +5,7 @@
 				<text class="font-500 mr10rpx text-28rpx w142rpx">项目名称</text>
 				<text>{{ crtItem.name }}</text>
 			</view>
-			<view class="f-c-c text-24rpx enter-btn enter">{{ crtItem.is_enter ? '已报名' : '未报名' }}</view>
+			<view class="f-c-c text-24rpx enter-btn enter" @click="goEnter">{{ getEnterStatus(crtItem) }}</view>
 		</view>
 		<view class="bg-#fff h90rpx px20rpx mt2rpx flex justify-between items-center">
 			<view class="flex items-center">
@@ -47,6 +47,7 @@
 <script setup>
 	import { computed } from 'vue';
 	import mpHtml from '@/uni_modules/mp-html/components/mp-html/mp-html.vue';
+	import { goPreSignUp, goEnterInfoPage } from '@/utils/goPage.js'
 	const emit = defineEmits(['goMemberList']);
 	const props = defineProps({
 		eventDetail: {
@@ -69,6 +70,25 @@
 	const detail = computed(() => {
 		return decodeURIComponent(props.eventDetail?.detail ?? '');
 	});
+
+	function goEnter() {
+		let { is_enter, is_pay, id } = props.crtItem
+		if (!is_enter) {
+			return goPreSignUp({ eventid: props.eventDetail.eventid, itemid: id })
+		}
+		// if (!is_pay) {
+		// 	return uni.showToast({
+		// 		title: '请前往小程序操作!',
+		// 		icon: 'none'
+		// 	})
+		// }
+		goEnterInfoPage(id)
+
+	}
+	function getEnterStatus({ is_enter, is_pay }) {
+		if (!is_enter) return '我要报名'
+		return is_pay ? '已报名' : '未交费'
+	}
 </script>
 
 <style lang="scss" scoped>

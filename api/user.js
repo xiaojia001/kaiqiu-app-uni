@@ -184,8 +184,17 @@ export function getPageUserRankList(data) {
 		}
 	})
 }
-
-
+// https://kaiqiuwang.cc/xcx/public/index.php/api/user/get_userinfo0 报名获取资料
+export function getUserinfo0() {
+	return http.post({
+		url: '/user/get_userinfo0',
+		custom: {
+			showSuccess: true,
+			showLoading: false,
+			showError: true
+		}
+	})
+}
 // https://kaiqiuwang.cc/xcx/public/index.php/api/User/getCredit?uid=0 用户信用
 
 // https://kaiqiuwang.cc/xcx/public/index.php/api/user/perfect_info 更新资料
