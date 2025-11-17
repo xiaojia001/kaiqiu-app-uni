@@ -172,7 +172,7 @@
 						</template>
 					</template>
 					<template #username2="{ row }">
-						<template v-if="row.flag === '0'" @click="goUserPageByUid(row.uid2)">{{ row.username2 }}</template>
+						<text v-if="row.flag === '0'" @click="goUserPageByUid(row.uid2)">{{ row.username2 }}</text>
 						<template v-if="row.flag === '1'">
 							<view class="f-c-c flex-col h80rpx leading-[1.2]">
 								<text @click="goUserPageByUid(row.uid2)">{{ row.username2 }}</text>

@@ -160,4 +160,16 @@ export function getEnterinfo(match_itemid) {
 }
 
 
+
 // https://kaiqiuwang.cc/xcx/public/index.php/api/enter/cancel_enter?enter_id=3915628&match_id=145181&match_itemid=7070238&xian_status=0&tag=1 取消报名
+
+export function cancelEnter(params) {
+	return http.get({
+		url: '/enter/cancel_enter',
+		params,
+		custom: {
+			showLoading: false,
+			showError: true
+		}
+	})
+}

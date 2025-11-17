@@ -85,9 +85,10 @@
 		goEnterInfoPage(id)
 
 	}
+
 	function getEnterStatus({ is_enter, is_pay }) {
 		if (!is_enter) return '我要报名'
-		return is_pay ? '已报名' : '未交费'
+		return is_pay == '1' ? '已报名' : '未交费'
 	}
 </script>
 
