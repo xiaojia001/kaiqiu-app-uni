@@ -4,10 +4,13 @@
 		<view class="bg-#FFFEFF text-#666 px20rpx flex items-center h80rpx mt2px justify-between">
 			<text>{{ baseInfo.match_name }}</text>
 		</view>
-		<zb-table show-heade :columns="columns" stripe :fit="false" border :data="list" :cell-style="setCellStyle" :cell-header-style="setCellHeaderStyle" @cellClick="cellClick">
+		<zb-table show-heade :columns="columns" stripe :fit="false" border :data="cptList" :cell-style="setCellStyle" :cell-header-style="setCellHeaderStyle" @cellClick="cellClick">
 			<template #name="{row}">
 				<text class="text-#E6326E" v-if="row.role==5">*</text>
 				<text>{{row.name}}</text>
+			</template>
+			<template #sex="{row}">
+				<text>{{getSex(row)}}</text>
 			</template>
 		</zb-table>
 	</view>
@@ -19,6 +22,9 @@
 	import { goUserPageByUid } from '@/utils/goPage.js'
 	const baseInfo = ref({});
 	const list = ref([]);
+	const cptList = computed(() => {
+		return list.value
+	});
 	const columns = [{
 			name: 'number',
 			label: '#',
@@ -28,10 +34,10 @@
 			emptyString: ' '
 		},
 		{
-			type:'slot',
+			type: 'slot',
 			name: 'name',
 			label: '名称',
-			width: 100,
+			width: 110,
 			fixed: 'left',
 			align: 'center'
 		},
@@ -39,30 +45,28 @@
 			name: 'newscore',
 			label: '报名积分',
 			align: 'center',
-			width: 70
+			width: 120
 		},
 		{
 			name: 'paid',
 			label: '确认',
 			align: 'center',
 			filters: {
-				0: '交费处理中',
+				0: '交费中',
 				1: '已交付',
 				2: '已报名'
 			},
-			width: 120
+			width: 60
 		},
 		{
+			type: 'slot',
 			name: 'sex',
 			label: '性别',
-			filters: {
-				1: '男',
-				2: '女'
-			},
 			align: 'center',
-			width: 46
+			width: 56
 		}
 	];
+
 
 	onLoad(({ matchStr }) => {
 		let str = decodeURIComponent(matchStr);
@@ -133,6 +137,15 @@
 				phoneNumber: row.mobile
 			});
 		}
+	}
+
+	function getSex({ sex }) {
+		let obj = { 1: '男', 2: '女' }
+		if (sex > 10) {
+			let [one, two] = sex.split('')
+			return obj[one] + '/' + obj[two]
+		}
+		return obj[sex]
 	}
 </script>
 

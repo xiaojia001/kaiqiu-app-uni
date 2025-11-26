@@ -150,7 +150,7 @@ export function getUserTags(params) {
 	})
 }
 
-// /User/getUserScores?uid=384588
+// /User/getUserScores
 export function getUserScores(uid) {
 	return http.get({
 		url: '/User/getUserScores',
@@ -163,13 +163,13 @@ export function getUserScores(uid) {
 }
 
 
-// https://kaiqiuwang.cc/xcx/public/index.php/api/user/lists
+// /user/lists
 /* 
  {
    "city": "-1",
    "now": "成都市",
    "sort": "2",
-   "page": "1",
+   "page": "1", 
    "index": "31111"
  }
  */
@@ -184,7 +184,7 @@ export function getPageUserRankList(data) {
 		}
 	})
 }
-// https://kaiqiuwang.cc/xcx/public/index.php/api/user/get_userinfo0 报名获取资料
+// 报名获取资料
 export function getUserinfo0() {
 	return http.post({
 		url: '/user/get_userinfo0',
@@ -207,9 +207,9 @@ export function getUserinfo0() {
   "IDNumber": "x", //身份证
   "clothes_size": "6",
   "qiupai": "蝴蝶Butterfly",
-  "qiupaitype": "张本智和ALC",
+  "qiupaitype": "XX ALC",
   "pathWords": "",
-  "hand": "左手",
+  "hand": "右手",
   "holder": "横板",
   "help": "0",  //代报名 1是关闭
   "ethnicity": "0",
