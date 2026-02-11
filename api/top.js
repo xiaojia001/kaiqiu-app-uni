@@ -1,27 +1,20 @@
 import http from '@/utils/request/index.js'
+import { presets } from './_config.js'
 
-// Top/getTop100Data?city=%E6%88%90%E9%83%BD%E5%B8%82&tabIndex=1&tid=2
-
-
-
+// 获取排行榜视图 /Top/lists
 export function getTopView(city) {
 	return http.post({
 		url: '/Top/lists',
 		data: { city },
-		custom: {
-			showLoading: true,
-			showError: true
-		}
+		custom: presets.loading
 	})
 }
 
+// 获取Top100数据 /Top/getTop100Data?city=成都市&tabIndex=1&tid=2
 export function getTop100Data(params) {
 	return http.get({
 		url: '/Top/getTop100Data',
 		params,
-		custom: {
-			showLoading: true,
-			showError: true
-		}
+		custom: presets.loading
 	})
 }

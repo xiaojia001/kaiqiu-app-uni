@@ -79,258 +79,279 @@
 		</view>
 	</view>
 </template>
+
 <script setup>
-	import zbTable from '@/uni_modules/zb-table/components/zb-table/zb-table.vue';
-	import calcCell from './calcCell.vue'
-	import { goUserPageByUid, goMatchDetailByReq, goMatchDetailByGameid, goMatchDetailByTTReq } from '@/utils/goPage.js'
-	import ttGameInfo from './ttGameInfo.vue'
-	import { getAllResult, getAllHonors } from '@/api/event.js';
-	import { watch } from 'vue';
-	const emit = defineEmits(['showTeamInfo']);
-	const { userInfo } = useStore('user');
-	const isInit = ref(false)
-	const groupId = ref('');
-	const groups = ref([]);
-	const honors = ref([]);
-	const ttgames = ref([]);
-	const ttdetailgames = ref([])
-	const showTtDetail = ref(false)
-	let allGroups = {};
-	let allHonors = {};
-	const props = defineProps({
-		eventDetail: {
-			default: () => ({}),
-			type: Object
-		},
-		crtItem: {
-			default: () => ({}),
-			type: Object
-		},
-		activeItemId: {
-			default: null,
-			type: [String, Number]
+import zbTable from '@/uni_modules/zb-table/components/zb-table/zb-table.vue';
+import calcCell from './calcCell.vue'
+import { goUserPageByUid, goMatchDetailByReq, goMatchDetailByGameid, goMatchDetailByTTReq } from '@/utils/goPage.js'
+import ttGameInfo from './ttGameInfo.vue'
+import { getAllResult, getAllHonors } from '@/api/event.js';
+import { watch, ref } from 'vue';
+
+const emit = defineEmits(['showTeamInfo']);
+const { userInfo } = useStore('user');
+
+const isInit = ref(false)
+const groupId = ref('');
+const groups = ref([]);
+const honors = ref([]);
+const ttgames = ref([]);
+const ttdetailgames = ref([])
+const showTtDetail = ref(false)
+let allGroups = {};
+let allHonors = {};
+
+const props = defineProps({
+	eventDetail: {
+		default: () => ({}),
+		type: Object
+	},
+	crtItem: {
+		default: () => ({}),
+		type: Object
+	},
+	activeItemId: {
+		default: null,
+		type: [String, Number]
+	}
+});
+
+const innerColums = [{
+		type: 'index',
+		label: `序号`,
+		width: uni.upx2px(70),
+		align: 'center'
+	}, {
+		name: 'username1',
+		type: 'slot',
+		label: '选手1',
+		width: uni.upx2px(180),
+		align: 'center'
+	},
+	{
+		name: 'username2',
+		type: 'slot',
+		label: '选手2',
+		width: uni.upx2px(180),
+		align: 'center'
+	},
+	{
+		name: 'bifen',
+		type: 'slot',
+		label: `比分`,
+		width: uni.upx2px(80),
+		align: 'center'
+	},
+	{
+		name: 'detail',
+		type: 'slot',
+		label: `详情`,
+		width: uni.upx2px(60),
+		align: 'center'
+	}
+]
+
+// 初始化
+init();
+
+watch(
+	() => props.activeItemId,
+	(val) => {
+		groups.value = allGroups.groups?.[val] ?? [];
+		honors.value = allHonors[val]?.filter((v) => v.uid != 0) ?? [];
+		ttgames.value = allGroups.ttgames?.[val] ?? []
+		ttdetailgames.value = allGroups.ttdetailgames?.[val] ?? []
+	}
+);
+
+// 加载数据
+async function init() {
+	await loadData();
+}
+
+// 加载成绩数据
+async function loadData() {
+	try {
+		const [resultRes, honorsRes] = await Promise.all([
+			getAllResult({ eventid: props.eventDetail.eventid, itemid: props.activeItemId }),
+			getAllHonors({ eventid: props.eventDetail.eventid })
+		]);
+
+		if (resultRes.data) {
+			allGroups = resultRes.data;
+			groups.value = resultRes.data.groups?.[props.activeItemId] ?? [];
+			ttgames.value = resultRes.data.ttgames?.[props.activeItemId] ?? []
+			ttdetailgames.value = resultRes.data.ttdetailgames?.[props.activeItemId] ?? []
 		}
+
+		if (honorsRes.data) {
+			allHonors = honorsRes.data;
+			honors.value = honorsRes.data[props.activeItemId]?.filter((v) => v.uid != 0) ?? [];
+		}
+	} finally {
+		isInit.value = true
+	}
+}
+
+// 暴露刷新方法给父组件
+defineExpose({
+	refresh: loadData
+});
+
+function setShow(i) {
+	let crtitem = groups.value[i][0]
+	if (crtitem.showDetail) {
+		crtitem.showDetail = false
+	} else {
+		groups.value.forEach(v => v[0].showDetail = false)
+		crtitem.showDetail = true
+	}
+}
+
+function setTableColumns(item, i) {
+	let list = [];
+	list.push({
+		name: 'newUsername',
+		label: `第${i + 1}组`,
+		width: 100,
+		fixed: 'left',
+		align: 'center'
 	});
-
-	const innerColums = [{
-			type: 'index',
-			label: `序号`,
-			width: uni.upx2px(70),
-			align: 'center'
-		}, {
-			name: 'username1',
-			type: 'slot',
-			label: '选手1',
-			width: uni.upx2px(180),
-			align: 'center'
-		},
-		{
-			name: 'username2',
-			type: 'slot',
-			label: '选手2',
-			width: uni.upx2px(180),
-			align: 'center'
-		},
-		{
-			name: 'bifen',
-			type: 'slot',
-			label: `比分`,
-			width: uni.upx2px(80),
-			align: 'center'
-		},
-		{
-			name: 'detail',
-			type: 'slot',
-			label: `详情`,
-			width: uni.upx2px(60),
-			align: 'center'
-		}
-	]
-
-	init();
-
-	watch(
-		() => props.activeItemId,
-		(val) => {
-			groups.value = allGroups.groups[val];
-			honors.value = allHonors[val].filter((v) => v.uid != 0);
-			ttgames.value = allGroups.ttgames[val] ?? []
-			ttdetailgames.value = allGroups.ttdetailgames?.[val] ?? []
-		}
-	);
-
-
-	function init() {
-		getAllResult({ eventid: props.eventDetail.eventid, itemid: props.activeItemId }).then((res) => {
-			if (res.data) {
-				allGroups = res.data;
-				groups.value = res.data.groups[props.activeItemId] ?? [];
-				ttgames.value = res.data.ttgames[props.activeItemId] ?? []
-				ttdetailgames.value = res.data.ttdetailgames?.[props.activeItemId] ?? []
-			}
-		}).finally(() => {
-			isInit.value = true
-		});
-		getAllHonors({ eventid: props.eventDetail.eventid }).then((res) => {
-			allHonors = res.data;
-			honors.value = res.data[props.activeItemId].filter((v) => v.uid != 0);
-		});
-	}
-
-	function setShow(i) {
-		let crtitem = groups.value[i][0]
-		if (crtitem.showDetail) {
-			crtitem.showDetail = false
-		} else {
-			groups.value.forEach(v => v[0].showDetail = false)
-			crtitem.showDetail = true
-		}
-	}
-
-	function setTableColumns(item, i) {
-		let list = [];
-		list.push({
-			name: 'newUsername',
-			label: `第${i + 1}组`,
-			width: 100,
-			fixed: 'left',
-			align: 'center'
-		});
-		list.push(
-			...item.map((v, index) => {
-				let pxWidth = 40;
-				return {
-					name: 'col' + (index + 1),
-					label: index + 1,
-					align: 'center',
-					emptyString: ' ',
-					width: pxWidth
-				};
-			})
-		);
-		list.push(
-			...[{
-					name: 'score',
-					label: `积分`,
-					width: 50,
-					align: 'center'
-				},
-				{
-					name: 'calc',
-					label: `计算`,
-					type: 'slot',
-					width: 60,
-					align: 'center'
-				},
-				{
-					name: 'rank',
-					label: `名次`,
-					width: 50,
-					align: 'center'
-				}
-			]
-		);
-		return list;
-	}
-
-	function setTableData(item, i) {
-		const { games, colors, uid, teamid } = item[0];
-		const viewId = teamid && teamid !== '0' ? 'teamid' : 'uid';
-		let list = item.map((v, index) => {
-			let obj = item.reduce((all, crt, sindex) => {
-				all[`col${sindex + 1}`] = sindex === index ? '' : games[`${item[index][viewId]}:${item[sindex][viewId]}`];
-				all[`col${sindex + 1}-color`] = sindex === index ? '' : colors[`${item[index][viewId]}:${item[sindex][viewId]}`];
-				if (viewId === 'uid') {
-					all[`col${sindex + 1}-info`] = sindex === index ? '' : { groupid: item[index]['groupid'], uid1: item[index][viewId], uid2: item[sindex][viewId] };
-				}
-				return all;
-			}, {});
+	list.push(
+		...item.map((v, index) => {
+			let pxWidth = 40;
 			return {
-				...v,
-				...obj,
-				newUsername: `${index + 1}${v.username}`
+				name: 'col' + (index + 1),
+				label: index + 1,
+				align: 'center',
+				emptyString: ' ',
+				width: pxWidth
 			};
-		});
-		return list;
-	}
-
-	function setCellHeaderStyle({ column, columnIndex }) {
-		return {
-			fontSize: '24rpx',
-			paddingLeft: '0',
-			paddingRight: '0'
-		};
-	}
-
-	function setCellStyleSmall({ row, column, rowIndex, columnIndex }) {
-		let obj = {
-			height: '80rpx',
-			fontSize: '24rpx',
-			paddingLeft: '0',
-			paddingRight: '0',
-			background: '#F2F0F2',
-		};
-		return obj;
-	}
-
-	function setCellStyle({ row, column, rowIndex, columnIndex }) {
-		let obj = {
-			height: '80rpx',
-			fontSize: '24rpx',
-			paddingLeft: '0',
-			paddingRight: '0'
-		};
-		if (rowIndex + 1 === columnIndex) {
-			obj.background = '#F2F1EE';
-		}
-
-		if (column.name.includes('col')) {
-			obj.color = row[column.name + '-color'] === 1 ? '#E6326E' : '';
-		}
-		if (column.name === 'rank' && row.rank <= props.crtItem.qualNum) {
-			obj.color = "#E6326E"
-			obj.fontWeight = 600
-		}
-		return obj;
-	}
-
-	function cellClick(row, index, column, i) {
-		if (column.name === 'newUsername') {
-			if (row.teamname) {
-				emit('showTeamInfo', row.teamname)
-			} else {
-				goUserPageByUid(row.uid)
+		})
+	);
+	list.push(
+		...[{
+				name: 'score',
+				label: `积分`,
+				width: 50,
+				align: 'center'
+			},
+			{
+				name: 'calc',
+				label: `计算`,
+				type: 'slot',
+				width: 60,
+				align: 'center'
+			},
+			{
+				name: 'rank',
+				label: `名次`,
+				width: 50,
+				align: 'center'
 			}
-		}
-		if (column.name.indexOf('col') >= 0 && row[column.name + '-info']) {
-			goMatchDetailByReq(row[column.name + '-info'])
-		}
+		]
+	);
+	return list;
+}
+
+function setTableData(item, i) {
+	const { games, colors, uid, teamid } = item[0];
+	const viewId = teamid && teamid !== '0' ? 'teamid' : 'uid';
+	let list = item.map((v, index) => {
+		let obj = item.reduce((all, crt, sindex) => {
+			all[`col${sindex + 1}`] = sindex === index ? '' : games[`${item[index][viewId]}:${item[sindex][viewId]}`];
+			all[`col${sindex + 1}-color`] = sindex === index ? '' : colors[`${item[index][viewId]}:${item[sindex][viewId]}`];
+			if (viewId === 'uid') {
+				all[`col${sindex + 1}-info`] = sindex === index ? '' : { groupid: item[index]['groupid'], uid1: item[index][viewId], uid2: item[sindex][viewId] };
+			}
+			return all;
+		}, {});
+		return {
+			...v,
+			...obj,
+			newUsername: `${index + 1}${v.username}`
+		};
+	});
+	return list;
+}
+
+function setCellHeaderStyle({ column, columnIndex }) {
+	return {
+		fontSize: '24rpx',
+		paddingLeft: '0',
+		paddingRight: '0'
+	};
+}
+
+function setCellStyleSmall({ row, column, rowIndex, columnIndex }) {
+	let obj = {
+		height: '80rpx',
+		fontSize: '24rpx',
+		paddingLeft: '0',
+		paddingRight: '0',
+		background: '#F2F0F2',
+	};
+	return obj;
+}
+
+function setCellStyle({ row, column, rowIndex, columnIndex }) {
+	let obj = {
+		height: '80rpx',
+		fontSize: '24rpx',
+		paddingLeft: '0',
+		paddingRight: '0'
+	};
+	if (rowIndex + 1 === columnIndex) {
+		obj.background = '#F2F1EE';
 	}
 
-	function goTtMatchDetail(row) {
-		const { uid1, uid2 } = row
-		goMatchDetailByTTReq({ uid1, uid2, eventid: props.eventDetail.eventid, itemid: props.activeItemId })
+	if (column.name.includes('col')) {
+		obj.color = row[column.name + '-color'] === 1 ? '#E6326E' : '';
 	}
+	if (column.name === 'rank' && row.rank <= props.crtItem.qualNum) {
+		obj.color = "#E6326E"
+		obj.fontWeight = 600
+	}
+	return obj;
+}
+
+function cellClick(row, index, column, i) {
+	if (column.name === 'newUsername') {
+		if (row.teamname) {
+			emit('showTeamInfo', row.teamname)
+		} else {
+			goUserPageByUid(row.uid)
+		}
+	}
+	if (column.name.indexOf('col') >= 0 && row[column.name + '-info']) {
+		goMatchDetailByReq(row[column.name + '-info'])
+	}
+}
+
+function goTtMatchDetail(row) {
+	const { uid1, uid2 } = row
+	goMatchDetailByTTReq({ uid1, uid2, eventid: props.eventDetail.eventid, itemid: props.activeItemId })
+}
 </script>
 
 <style lang="scss" scoped>
-	.score-btn {
-		border: 2rpx solid #39b54a;
-		color: #39b54a;
-		padding: 8rpx 16rpx;
-		font-size: 26rpx;
-	}
+.score-btn {
+	border: 2rpx solid #39b54a;
+	color: #39b54a;
+	padding: 8rpx 16rpx;
+	font-size: 26rpx;
+}
 
-	.honor-box {
-		height: 60rpx;
-		line-height: 60rpx;
-		padding-left: 6rpx;
-		color: #2c84ff;
-		border: 1px solid #666;
-		border-top: none;
+.honor-box {
+	height: 60rpx;
+	line-height: 60rpx;
+	padding-left: 6rpx;
+	color: #2c84ff;
+	border: 1px solid #666;
+	border-top: none;
 
-		&.is-first {
-			border-top: 1px solid #666;
-		}
+	&.is-first {
+		border-top: 1px solid #666;
 	}
+}
 </style>

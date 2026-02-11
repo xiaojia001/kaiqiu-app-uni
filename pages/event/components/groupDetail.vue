@@ -17,134 +17,147 @@
 		</template>
 	</view>
 </template>
+
 <script setup>
-	import zbTable from '@/uni_modules/zb-table/components/zb-table/zb-table.vue';
-	import { getGroups } from '@/api/event.js';
-	import { goUserPageByUid, goTTdetailPage, goGroupDetailPage } from '@/utils/goPage.js'
-	import { watch } from 'vue';
-	const emit = defineEmits(['showTeamInfo']);
-	const { userInfo } = useStore('user');
-	const groupId = ref('');
-	const groups = ref([]);
-	let allGroups = [];
-	const props = defineProps({
-		eventDetail: {
-			default: () => ({}),
-			type: Object
-		},
-		crtItem: {
-			default: () => ({}),
-			type: Object
-		},
-		activeItemId: {
-			default: null,
-			type: [String, Number]
-		}
+import zbTable from '@/uni_modules/zb-table/components/zb-table/zb-table.vue';
+import { getGroups } from '@/api/event.js';
+import { goUserPageByUid, goTTdetailPage, goGroupDetailPage } from '@/utils/goPage.js'
+import { watch, ref } from 'vue';
+
+const emit = defineEmits(['showTeamInfo']);
+const { userInfo } = useStore('user');
+
+const groupId = ref('');
+const groups = ref([]);
+let allGroups = [];
+
+const props = defineProps({
+	eventDetail: {
+		default: () => ({}),
+		type: Object
+	},
+	crtItem: {
+		default: () => ({}),
+		type: Object
+	},
+	activeItemId: {
+		default: null,
+		type: [String, Number]
+	}
+});
+
+// 初始化加载数据
+init();
+
+watch(
+	() => props.activeItemId,
+	(val) => {
+		groups.value = allGroups[val]?.groups ?? [];
+	}
+);
+
+// 加载分组数据
+async function init() {
+	await loadGroups();
+}
+
+// 加载分组数据
+async function loadGroups() {
+	const res = await getGroups({ eventid: props.eventDetail.eventid, itemid: props.activeItemId });
+	if (res.data) {
+		allGroups = res.data;
+		groups.value = res.data[props.activeItemId]?.groups ?? [];
+	}
+}
+
+// 暴露刷新方法给父组件
+defineExpose({
+	refresh: loadGroups
+});
+
+function setTableColumns(item, i) {
+	let list = [];
+	list.push({
+		name: 'newUsername',
+		label: `第${i + 1}组`,
+		width: 100,
+		fixed: 'left',
+		align: 'center'
 	});
-
-	setTimeout(() => {
-		init();
-	}, 50)
-
-	watch(
-		() => props.activeItemId,
-		(val) => {
-			groups.value = allGroups[val].groups;
-		}
-	);
-
-	function init() {
-		getGroups({ eventid: props.eventDetail.eventid, itemid: props.activeItemId }).then((res) => {
-			if (res.data) {
-				allGroups = res.data;
-				groups.value = res.data[props.activeItemId].groups;
-			}
-		});
-	}
-
-	function setTableColumns(item, i) {
-		let list = [];
-		list.push({
-			name: 'newUsername',
-			label: `第${i + 1}组`,
-			width: 100,
-			fixed: 'left',
-			align: 'center'
-		});
-		list.push(
-			...item.map((v, index) => {
-				let pxWidth = (uni.upx2px(750) - 100) / item.length;
-				return {
-					name: 'col' + (index + 1),
-					label: index + 1,
-					align: 'center',
-					emptyString: ' ',
-					width: pxWidth
-				};
-			})
-		);
-		return list;
-	}
-
-	function setTableData(item, i) {
-		let list = item.map((v, index) => {
+	list.push(
+		...item.map((v, index) => {
+			let pxWidth = (uni.upx2px(750) - 100) / item.length;
 			return {
-				...v,
-				newUsername: `${index + 1}${v.username}`
+				name: 'col' + (index + 1),
+				label: index + 1,
+				align: 'center',
+				emptyString: ' ',
+				width: pxWidth
 			};
-		});
-		return list;
-	}
+		})
+	);
+	return list;
+}
 
-	function setCellHeaderStyle({ column, columnIndex }) {
+function setTableData(item, i) {
+	let list = item.map((v, index) => {
 		return {
-			fontSize: '24rpx',
-			paddingLeft: '0px',
-			paddingRight: '0px'
+			...v,
+			newUsername: `${index + 1}${v.username}`
 		};
-	}
+	});
+	return list;
+}
 
-	function setCellStyle({ row, column, rowIndex, columnIndex }) {
-		let obj = {
-			fontSize: '24rpx',
-			paddingLeft: '0px',
-			paddingRight: '0px'
-		};
-		if (rowIndex + 1 === columnIndex) {
-			obj.background = '#F2F1EE';
-		}
-		if (row.uid == userInfo.value.id) {
-			obj.color = '#F89703';
-			obj.fontWeight = 600;
-		}
-		return obj;
-	}
+function setCellHeaderStyle({ column, columnIndex }) {
+	return {
+		fontSize: '24rpx',
+		paddingLeft: '0px',
+		paddingRight: '0px'
+	};
+}
 
-	function cellClick(row, index, column, i) {
-		if (column.name === 'newUsername') {
-			if (row.teamname) {
-				emit('showTeamInfo', row.teamname)
-			} else {
-				goUserPageByUid(row.uid)
-			}
-		}
+function setCellStyle({ row, column, rowIndex, columnIndex }) {
+	let obj = {
+		fontSize: '24rpx',
+		paddingLeft: '0px',
+		paddingRight: '0px'
+	};
+	if (rowIndex + 1 === columnIndex) {
+		obj.background = '#F2F1EE';
 	}
+	if (row.uid == userInfo.value.id) {
+		obj.color = '#F89703';
+		obj.fontWeight = 600;
+	}
+	return obj;
+}
 
-	function goSetScorePage() {
-		const { ifTT } = props.crtItem
-		if (ifTT) {
-			goTTdetailPage({ itemid: props.activeItemId, eventid: props.eventDetail.eventid })
+function cellClick(row, index, column, i) {
+	if (column.name === 'newUsername') {
+		if (row.teamname) {
+			emit('showTeamInfo', row.teamname)
 		} else {
-			goGroupDetailPage({ itemid: props.activeItemId, eventid: props.eventDetail.eventid })
+			goUserPageByUid(row.uid)
 		}
 	}
+}
+
+function goSetScorePage() {
+	const { ifTT } = props.crtItem
+	if (ifTT) {
+		goTTdetailPage({ itemid: props.activeItemId, eventid: props.eventDetail.eventid })
+	} else {
+		goGroupDetailPage({ itemid: props.activeItemId, eventid: props.eventDetail.eventid })
+	}
+}
 </script>
 
 <style lang="scss" scoped>
-	.score-btn {
-		border: 2rpx solid #39b54a;
-		color: #39b54a;
-		padding: 8rpx 16rpx;
-		font-size: 26rpx;
-	}
+.score-btn {
+	border: 2rpx solid #39b54a;
+	color: #39b54a;
+	padding: 8rpx 16rpx;
+	font-size: 26rpx;
+}
 </style>

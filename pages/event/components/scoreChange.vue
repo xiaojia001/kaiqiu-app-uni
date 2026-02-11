@@ -24,197 +24,215 @@
 		</view>
 	</view>
 </template>
+
 <script setup>
-	import zbTable from '@/uni_modules/zb-table/components/zb-table/zb-table.vue';
-	import { getScoreChangeByEventid } from '@/api/event.js';
-	import { goUserPageByUid } from '@/utils/goPage.js'
-	import { computed, watch } from 'vue';
-	const { userInfo } = useStore('user');
-	const groupId = ref('');
-	const list = ref([]);
-	let allList = [];
-	const ifCalObj = ref({})
-	const myScObj = ref({})
-	const props = defineProps({
-		eventDetail: {
-			default: () => ({}),
-			type: Object
-		},
-		crtItem: {
-			default: () => ({}),
-			type: Object
-		},
-		activeItemId: {
-			default: null,
-			type: [String, Number]
-		}
-	});
-	const column = [{
-			type: 'index',
-			label: '序号',
-			width: uni.upx2px(120),
-			fixed: 'left',
-			align: 'center'
-		},
-		{
-			name: 'realname',
-			label: '姓名',
-			width: uni.upx2px(170),
-			align: 'center'
-		},
-		{
-			name: 'prescore',
-			label: '赛前积分',
-			align: 'center',
-			width: uni.upx2px(170),
-		},
-		{
-			name: 'postscore',
-			label: '赛后积分',
-			align: 'center',
-			width: uni.upx2px(170),
-		},
-		{
-			type: 'slot',
-			name: 'change',
-			label: '变化',
-			align: 'center',
-			width: uni.upx2px(120),
-		},
-	]
-	const columnMe = [{
-			type: 'index',
-			label: '序号',
-			width: uni.upx2px(120),
-			fixed: 'left',
-			align: 'center'
-		},
-		{
-			type: 'slot',
-			name: 'username1',
-			label: '姓名1',
-			width: uni.upx2px(170),
-			align: 'center'
-		},
-		{
-			name: 'username2',
-			label: '姓名2',
-			align: 'center',
-			width: uni.upx2px(170),
-		},
-		{
-			type: 'slot',
-			name: 'result',
-			label: '比分',
-			align: 'center',
-			width: uni.upx2px(170),
-		},
-		{
-			name: 'score1',
-			label: '变化',
-			align: 'center',
-			width: uni.upx2px(120),
-		},
-	]
-	init();
+import zbTable from '@/uni_modules/zb-table/components/zb-table/zb-table.vue';
+import { getScoreChangeByEventid } from '@/api/event.js';
+import { goUserPageByUid } from '@/utils/goPage.js'
+import { computed, watch, ref } from 'vue';
 
-	watch(
-		() => props.activeItemId,
-		(val) => {
-			list.value = allList[val] ?? [];
-		}
-	);
+const { userInfo } = useStore('user');
 
-	const ifCal = computed(() => {
-		return ifCalObj.value?.[props.activeItemId] === 1
-	})
+const groupId = ref('');
+const list = ref([]);
+let allList = {};
+const ifCalObj = ref({})
+const myScObj = ref({})
 
-	const listMe = computed(() => {
-		return myScObj.value?.[props.activeItemId] ?? []
-	})
-
-	function init() {
-		getScoreChangeByEventid(props.eventDetail.eventid).then((res) => {
-			if (res.data) {
-				allList = res.data.sc ?? {};
-				list.value = allList[props.activeItemId] ?? [];
-				ifCalObj.value = res.data.ifCal ?? {}
-				myScObj.value = res.data.mysc ?? {}
-			}
-		});
+const props = defineProps({
+	eventDetail: {
+		default: () => ({}),
+		type: Object
+	},
+	crtItem: {
+		default: () => ({}),
+		type: Object
+	},
+	activeItemId: {
+		default: null,
+		type: [String, Number]
 	}
+});
 
-	function setTableData(item, i) {
-		let list = item.map((v, index) => {
-			return {
-				...v,
-				newUsername: `${index + 1}${v.username}`
-			};
-		});
-		return list;
+const column = [{
+		type: 'index',
+		label: '序号',
+		width: uni.upx2px(120),
+		fixed: 'left',
+		align: 'center'
+	},
+	{
+		name: 'realname',
+		label: '姓名',
+		width: uni.upx2px(170),
+		align: 'center'
+	},
+	{
+		name: 'prescore',
+		label: '赛前积分',
+		align: 'center',
+		width: uni.upx2px(170),
+	},
+	{
+		name: 'postscore',
+		label: '赛后积分',
+		align: 'center',
+		width: uni.upx2px(170),
+	},
+	{
+		type: 'slot',
+		name: 'change',
+		label: '变化',
+		align: 'center',
+		width: uni.upx2px(120),
+	},
+]
+
+const columnMe = [{
+		type: 'index',
+		label: '序号',
+		width: uni.upx2px(120),
+		fixed: 'left',
+		align: 'center'
+	},
+	{
+		type: 'slot',
+		name: 'username1',
+		label: '姓名1',
+		width: uni.upx2px(170),
+		align: 'center'
+	},
+	{
+		name: 'username2',
+		label: '姓名2',
+		align: 'center',
+		width: uni.upx2px(170),
+	},
+	{
+		type: 'slot',
+		name: 'result',
+		label: '比分',
+		align: 'center',
+		width: uni.upx2px(170),
+	},
+	{
+		name: 'score1',
+		label: '变化',
+		align: 'center',
+		width: uni.upx2px(120),
+	},
+]
+
+// 初始化
+init();
+
+watch(
+	() => props.activeItemId,
+	(val) => {
+		list.value = allList[val] ?? [];
 	}
+);
 
-	function setCellHeaderStyle({ column, columnIndex }) {
+const ifCal = computed(() => {
+	return ifCalObj.value?.[props.activeItemId] === 1
+})
+
+const listMe = computed(() => {
+	return myScObj.value?.[props.activeItemId] ?? []
+})
+
+// 加载数据
+async function init() {
+	await loadData();
+}
+
+// 加载积分变化数据
+async function loadData() {
+	const res = await getScoreChangeByEventid(props.eventDetail.eventid);
+	if (res.data) {
+		allList = res.data.sc ?? {};
+		list.value = allList[props.activeItemId] ?? [];
+		ifCalObj.value = res.data.ifCal ?? {}
+		myScObj.value = res.data.mysc ?? {}
+	}
+}
+
+// 暴露刷新方法给父组件
+defineExpose({
+	refresh: loadData
+});
+
+function setTableData(item, i) {
+	let list = item.map((v, index) => {
 		return {
-			fontSize: '28rpx',
-			paddingLeft: '6rpx',
-			paddingRight: '6rpx'
+			...v,
+			newUsername: `${index + 1}${v.username}`
 		};
-	}
+	});
+	return list;
+}
 
-	function setCellStyle({ row, column, rowIndex, columnIndex }) {
-		let obj = {
-			fontSize: '28rpx',
-			paddingLeft: '6rpx',
-			paddingRight: '6rpx'
-		};
-		if (columnIndex % 2 == 0 && columnIndex > 0) {
-			obj.color = '#E6326E';
-		} else if (columnIndex % 2 == 1) {
-			obj.color = '#248DFF';
-		}
-		return obj;
-	}
+function setCellHeaderStyle({ column, columnIndex }) {
+	return {
+		fontSize: '28rpx',
+		paddingLeft: '6rpx',
+		paddingRight: '6rpx'
+	};
+}
 
-	function setStyleMe({ row, column, rowIndex, columnIndex }) {
-		let obj = {
-			fontSize: '28rpx',
-			paddingLeft: '6rpx',
-			paddingRight: '6rpx'
-		};
-		if (columnIndex === 2) {
-			obj.color = '#248DFF';
-
-		} else if (columnIndex > 2) {
-			obj.color = '#E6326E';
-		}
-		return obj;
+function setCellStyle({ row, column, rowIndex, columnIndex }) {
+	let obj = {
+		fontSize: '28rpx',
+		paddingLeft: '6rpx',
+		paddingRight: '6rpx'
+	};
+	if (columnIndex % 2 == 0 && columnIndex > 0) {
+		obj.color = '#E6326E';
+	} else if (columnIndex % 2 == 1) {
+		obj.color = '#248DFF';
 	}
+	return obj;
+}
 
-	function rowClick({ uid }) {
-		uid && goUserPageByUid(uid)
-	}
+function setStyleMe({ row, column, rowIndex, columnIndex }) {
+	let obj = {
+		fontSize: '28rpx',
+		paddingLeft: '6rpx',
+		paddingRight: '6rpx'
+	};
+	if (columnIndex === 2) {
+		obj.color = '#248DFF';
 
-	function cellClick(row, index, column) {
-		if (column.name === 'username2') {
-			goUserPageByUid(row.uid2)
-		}
+	} else if (columnIndex > 2) {
+		obj.color = '#E6326E';
 	}
+	return obj;
+}
 
-	function showInfo() {
-		uni.showToast({
-			title: "此积分仅供参考,站方会在10个工作日后确认",
-			icon: 'none',
-			duration: 3000
-		})
+function rowClick({ uid }) {
+	uid && goUserPageByUid(uid)
+}
+
+function cellClick(row, index, column) {
+	if (column.name === 'username2') {
+		goUserPageByUid(row.uid2)
 	}
+}
+
+function showInfo() {
+	uni.showToast({
+		title: "此积分仅供参考,站方会在10个工作日后确认",
+		icon: 'none',
+		duration: 3000
+	})
+}
 </script>
 
 <style lang="scss" scoped>
-	.change-btn {
-		border: 2rpx solid #E6326E;
-		color: #E6326E;
-		padding: 8rpx 16rpx;
-		font-size: 26rpx;
-	}
+.change-btn {
+	border: 2rpx solid #E6326E;
+	color: #E6326E;
+	padding: 8rpx 16rpx;
+	font-size: 26rpx;
+}
 </style>

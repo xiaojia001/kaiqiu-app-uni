@@ -1,14 +1,12 @@
 import http from '@/utils/request/index.js'
-// 获取我的页面 信息
+import { presets, mergeConfig } from './_config.js'
+
+// 获取我的页面信息
 export function getUserInfo(data) {
 	return http.post({
 		url: '/user/get_userinfo',
 		data,
-		custom: {
-			noToLogin: true,
-			showLoading: false,
-			showError: false
-		}
+		custom: mergeConfig(presets.silent, { noToLogin: true })
 	})
 }
 
@@ -16,100 +14,61 @@ export function getUserInfo(data) {
 export function getAdvProfile(uid) {
 	return http.post({
 		url: '/user/adv_profile',
-		params: {
-			uid
-		},
-		custom: {
-			showLoading: true,
-			showError: true
-		}
+		params: { uid },
+		custom: presets.loading
 	})
 }
 
-// 用户近期比赛  分页
+// 用户近期比赛 - 分页
 export function getPageGamesByUid(uid, page) {
 	return http.get({
-		url: 'User/getGames',
-		params: {
-			uid,
-			page
-		},
-		custom: {
-			showLoading: false,
-			showError: true
-		}
+		url: '/User/getGames',
+		params: { uid, page },
+		custom: presets.standard
 	})
 }
 
-// 获取我的参赛列表 分页
+// 获取我的参赛列表 - 分页
 export function getMatchListHisByPage(page) {
 	return http.post({
 		url: '/center/events',
-		data: {
-			page,
-			index: 0
-		},
-		custom: {
-			showLoading: false,
-			showError: true
-		}
+		data: { page, index: 0 },
+		custom: presets.standard
 	})
 }
 
 // 关注
 export function goFolloweeByUid(uid) {
 	return http.get({
-		url: 'User/followee',
-		params: {
-			uid
-		},
-		custom: {
-			showSuccess: true,
-			showLoading: false,
-			showError: true
-		}
+		url: '/User/followee',
+		params: { uid },
+		custom: presets.success
 	})
 }
 
 // 取关
 export function goCancelFolloweeByUid(uid) {
 	return http.get({
-		url: 'User/cancelFollowee',
-		params: {
-			uid
-		},
-		custom: {
-			showSuccess: true,
-			showLoading: false,
-			showError: true
-		}
+		url: '/User/cancelFollowee',
+		params: { uid },
+		custom: presets.success
 	})
 }
 
 // 关注列表
 export function getUserFolloweesList() {
 	return http.get({
-		url: 'User/getUserFolloweesList',
-		custom: {
-			showSuccess: false,
-			showLoading: true,
-			showError: true
-		}
+		url: '/User/getUserFolloweesList',
+		custom: presets.loading
 	})
 }
 
 // 获取关注人最近比赛
 export function getFolloweeEnrolledMatch(uid) {
 	return http.get({
-		url: 'User/getFolloweeEnrolledMatch',
-		params: {
-			uid
-		},
-		custom: {
-			showSuccess: false,
-			showLoading: false,
-			showError: true
-		}
+		url: '/User/getFolloweeEnrolledMatch',
+		params: { uid },
+		custom: presets.standard
 	})
 }
 
@@ -118,106 +77,67 @@ export function getUserListPageByKey(params) {
 	return http.get({
 		url: '/user/lists',
 		params,
-		custom: {
-			showLoading: true,
-			showError: true
-		}
+		custom: presets.loading
 	})
 }
-
 
 // 金币签到
 export function getDaySign() {
 	return http.post({
 		url: '/user/sign',
-		custom: {
-			showSuccess: true,
-			showLoading: false,
-			showError: true
-		}
+		custom: presets.success
 	})
 }
 
-// /User/get_tags?uid=0&limitByCount=6&getNegative=false 获取用户标签
+// 获取用户标签 /User/get_tags?uid=0&limitByCount=6&getNegative=false
 export function getUserTags(params) {
 	return http.get({
 		url: '/User/get_tags',
 		params,
-		custom: {
-			showLoading: true,
-			showError: true
-		}
+		custom: presets.loading
 	})
 }
 
-// /User/getUserScores
+// 获取用户积分 /User/getUserScores
 export function getUserScores(uid) {
 	return http.get({
 		url: '/User/getUserScores',
 		params: { uid },
-		custom: {
-			showLoading: true,
-			showError: true
-		}
+		custom: presets.loading
 	})
 }
 
-
-// /user/lists
-/* 
- {
-   "city": "-1",
-   "now": "成都市",
-   "sort": "2",
-   "page": "1", 
-   "index": "31111"
- }
- */
+// 获取用户排行榜列表
 export function getPageUserRankList(data) {
 	return http.post({
 		url: '/user/lists',
 		data,
-		custom: {
-			showSuccess: true,
-			showLoading: false,
-			showError: true
-		}
+		custom: mergeConfig(presets.success, { showLoading: false })
 	})
 }
+
 // 报名获取资料
 export function getUserinfo0() {
 	return http.post({
 		url: '/user/get_userinfo0',
-		custom: {
-			showSuccess: true,
-			showLoading: false,
-			showError: true
-		}
+		custom: presets.success
 	})
 }
-// https://kaiqiuwang.cc/xcx/public/index.php/api/User/getCredit?uid=0 用户信用
 
-// https://kaiqiuwang.cc/xcx/public/index.php/api/user/perfect_info 更新资料
-/* 
-{
-  "realname": "***",
-  "sex": "1",
-  "ifCanModi": "0",
-  "birthday": "19xx-0x-xx",
-  "IDNumber": "x", //身份证
-  "clothes_size": "6",
-  "qiupai": "蝴蝶Butterfly",
-  "qiupaitype": "XX ALC",
-  "pathWords": "",
-  "hand": "右手",
-  "holder": "横板",
-  "help": "0",  //代报名 1是关闭
-  "ethnicity": "0",
-  "zhengshou": "斯帝卡STIGA",
-  "zhengshoutype": "",
-  "fanshou": "骄猛XIOM",
-  "fanshoutype": "",
-  "ttStyle": "",    //打法
-  "ifHonorShow": "1"  //展示荣耀
-}  
- */
+// 更新用户资料 /user/perfect_info
+export function updateUserInfo(data) {
+	return http.post({
+		url: '/user/perfect_info',
+		data,
+		custom: presets.success
+	})
+}
+
+// 获取用户信用 /User/getCredit?uid=0
+export function getUserCredit(uid) {
+	return http.get({
+		url: '/User/getCredit',
+		params: { uid },
+		custom: presets.standard
+	})
+}
