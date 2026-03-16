@@ -52,6 +52,18 @@ const store = defineStore('user', () => {
 	const searchPlayerHis = ref(getStorage(STORAGE_KEYS.SEARCH_HISTORY, []))
 	const isMoreMode = ref(getStorage(STORAGE_KEYS.MORE_MODE, false))
 
+	// 确保 citySelectHis 是数组
+	if (!Array.isArray(citySelectHis.value)) {
+		citySelectHis.value = []
+		setStorage(STORAGE_KEYS.CITY_HISTORY, [])
+	}
+
+	// 确保 searchPlayerHis 是数组
+	if (!Array.isArray(searchPlayerHis.value)) {
+		searchPlayerHis.value = []
+		setStorage(STORAGE_KEYS.SEARCH_HISTORY, [])
+	}
+
 	// ============ Getters ============
 	const cityName = computed(() => selectCity.value?.name ?? '')
 	const isLoggedIn = computed(() => !!token.value)
@@ -105,6 +117,11 @@ const store = defineStore('user', () => {
 	 * @param {Object} city
 	 */
 	function setCitySelectHis(city) {
+		// 确保 citySelectHis 是数组
+		if (!Array.isArray(citySelectHis.value)) {
+			citySelectHis.value = []
+		}
+		
 		if (citySelectHis.value.some(v => v.id === city.id)) return
 		citySelectHis.value = [city, ...citySelectHis.value.slice(0, 5)]
 		setStorage(STORAGE_KEYS.CITY_HISTORY, citySelectHis.value)
@@ -124,6 +141,11 @@ const store = defineStore('user', () => {
 	 */
 	function setSearchPlayerHis(keyword) {
 		if (!keyword?.trim()) return
+
+		// 确保 searchPlayerHis 是数组
+		if (!Array.isArray(searchPlayerHis.value)) {
+			searchPlayerHis.value = []
+		}
 
 		const trimmed = keyword.trim()
 		// 去重并移到最前
