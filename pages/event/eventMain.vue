@@ -77,7 +77,7 @@
 
 <script setup>
 import { getEventDetaiByIdAndLocation, get_member_detail } from '@/api/event.js'
-import { goGymDetailPage } from '@/utils/goPage.js'
+import { goGymDetailPage, getPageParams } from '@/utils/goPage.js'
 import mainDetail from './components/mainDetail.vue'
 import groupDetail from './components/groupDetail.vue'
 import scoreDetail from './components/scoreDetail.vue'
@@ -107,7 +107,8 @@ const groupDetailRef = ref(null)
 const scoreDetailRef = ref(null)
 const scoreChangeRef = ref(null)
 
-onLoad(({ id, itemId }) => {
+onLoad(() => {
+	const { id, itemId } = getPageParams()
 	crtId = id
 	getEventDetail(id)
 	activeItemId.value = itemId

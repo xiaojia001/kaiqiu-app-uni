@@ -20,6 +20,7 @@
 
 <script setup>
 	import { getEnterinfo, cancelEnter } from '@/api/event.js'
+	import { getPageParams } from '@/utils/goPage.js'
 	const columns = [{
 			type: 'index',
 			label: '序号',
@@ -56,7 +57,8 @@
 		list: []
 	})
 	let match_itemid = null
-	onLoad(({ id }) => {
+	onLoad(() => {
+		const { id } = getPageParams()
 		match_itemid = id
 		getEnterinfo(id).then(res => {
 			info.value = res.data

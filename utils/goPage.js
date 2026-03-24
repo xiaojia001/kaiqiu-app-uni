@@ -21,6 +21,53 @@ export const PAGES = {
 	FOLLOW_PLAYERS: '/pages/user/followPlayers'
 }
 
+// ============ URL 参数处理工具 ============
+
+/**
+ * 构建带参数的URL（统一编码）
+ * @param {string} baseUrl - 基础路径
+ * @param {Object} params - 参数对象
+ * @returns {string}
+ */
+export function buildUrl(baseUrl, params = {}) {
+	const query = Object.entries(params)
+		.filter(([, v]) => v !== undefined && v !== null && v !== '')
+		.map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
+		.join('&')
+	return query ? `${baseUrl}?${query}` : baseUrl
+}
+
+/**
+ * 解析URL查询参数（统一解码）
+ * @param {Object} options - uni.navigateTo 传入的 options
+ * @returns {Object} 解码后的参数对象
+ */
+export function parseUrlParams(options = {}) {
+	const decodedOptions = {}
+	for (const key in options) {
+		const value = options[key]
+		if (typeof value === 'string') {
+			decodedOptions[key] = decodeURIComponent(value)
+		} else {
+			decodedOptions[key] = value
+		}
+	}
+	return decodedOptions
+}
+
+/**
+ * 解析当前页面参数（简化版，用于 onLoad）
+ * @returns {Object}
+ */
+export function getPageParams() {
+	const pages = getCurrentPages()
+	const currentPage = pages[pages.length - 1]
+	const { options } = currentPage.$page
+	return parseUrlParams(options)
+}
+
+// ============ 内部函数 ============
+
 /**
  * 检查登录状态
  * @param {boolean} showToast - 是否显示提示
@@ -53,20 +100,6 @@ function requireLogin(fn) {
 		if (!checkLogin()) return goLogin()
 		return fn.apply(this, args)
 	}
-}
-
-/**
- * 构建带参数的URL
- * @param {string} baseUrl - 基础路径
- * @param {Object} params - 参数对象
- * @returns {string}
- */
-function buildUrl(baseUrl, params = {}) {
-	const query = Object.entries(params)
-		.filter(([, v]) => v !== undefined && v !== null)
-		.map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
-		.join('&')
-	return query ? `${baseUrl}?${query}` : baseUrl
 }
 
 /**

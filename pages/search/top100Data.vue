@@ -17,7 +17,7 @@
 
 <script setup>
 	import { getTop100Data } from '@/api/top.js'
-	import { goUserPageByUid } from '@/utils/goPage.js'
+	import { goUserPageByUid, getPageParams } from '@/utils/goPage.js'
 	const { selectCity } = useStore('user');
 	const crtCity = ref({ id: selectCity.value.id, name: selectCity.value.name })
 	const tid = ref('')
@@ -56,11 +56,10 @@
 		}
 	])
 	const tableKey = ref(0)
-	onLoad(({ tid: typeId, name }) => {
+	onLoad(() => {
+		const { tid: tidParam, name } = getPageParams()
+		const typeId = tidParam
 		tid.value = +typeId
-		// if (tid.value === 6) {
-		// 	columns.value[2].label = '等级'
-		// }
 		typeName.value = name
 		refresh(true)
 	})

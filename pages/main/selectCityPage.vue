@@ -8,12 +8,14 @@
 <script setup>
 	import haoIndexList from '@/components/hao-indexList/hao-indexList.vue'
 	import { getCities } from '@/api/publicc.js'
+	import { getPageParams } from '@/utils/goPage.js'
 	const { setSelectCity, selectCity, citySelectHis, setCitySelectHis } = useStore('user')
 	const crtSelect = ref({})
 	const letters = ref([])
 	const cityList = ref([])
 	let isTemp = false
-	onLoad(({ id, name, temp }) => {
+	onLoad(() => {
+		const { id, name, temp } = getPageParams()
 		if (id && name || temp) {
 			isTemp = true
 			crtSelect.value = { id, name }

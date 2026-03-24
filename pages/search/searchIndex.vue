@@ -35,6 +35,7 @@
 	import { getArenaListPageByKey } from '@/api/arena.js'
 	import { getMatchListPageByKey } from '@/api/match.js'
 	import { getUserListPageByKey } from '@/api/user.js'
+	import { getPageParams } from '@/utils/goPage.js'
 	import { onPageScroll, onReachBottom } from '@dcloudio/uni-app'
 	import useMescroll from '@/uni_modules/mescroll-uni/hooks/useMescroll.js';
 	const { mescrollInit, downCallback, getMescroll } = useMescroll(onPageScroll, onReachBottom); // 调用mescroll的hook
@@ -55,7 +56,8 @@
 	let isInit = false
 	const list = ref([])
 
-	onLoad(({ player }) => {
+	onLoad(() => {
+		const { player } = getPageParams()
 		if (player) {
 			tabIndex.value = 2
 			searchText.value = player

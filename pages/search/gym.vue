@@ -68,7 +68,7 @@
 
 <script setup>
 	import { getArenaDetail, getArenaMatchList } from '@/api/arena.js'
-	import { goEventMainPage } from '@/utils/goPage.js'
+	import { goEventMainPage, getPageParams } from '@/utils/goPage.js'
 	import { onPageScroll, onReachBottom } from '@dcloudio/uni-app';
 	import useMescroll from '@/uni_modules/mescroll-uni/hooks/useMescroll.js';
 	const { mescrollInit, downCallback, getMescroll } = useMescroll(onPageScroll, onReachBottom); // 调用mescroll的hook
@@ -77,7 +77,8 @@
 	let isInit = false
 	let crtId = ''
 	const popup = ref(null)
-	onLoad(({ id }) => {
+	onLoad(() => {
+		const { id } = getPageParams()
 		crtId = id
 		getGymDetail(id)
 	})

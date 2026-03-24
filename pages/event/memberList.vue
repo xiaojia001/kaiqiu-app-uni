@@ -19,7 +19,7 @@
 <script setup>
 	import zbTable from '@/uni_modules/zb-table/components/zb-table/zb-table.vue';
 	import { get_member_detail } from '@/api/event.js';
-	import { goUserPageByUid } from '@/utils/goPage.js'
+	import { goUserPageByUid, getPageParams } from '@/utils/goPage.js'
 	const baseInfo = ref({});
 	const list = ref([]);
 	const cptList = computed(() => {
@@ -68,7 +68,8 @@
 	];
 
 
-	onLoad(({ matchStr }) => {
+	onLoad(() => {
+		const { matchStr } = getPageParams()
 		let str = decodeURIComponent(matchStr);
 		baseInfo.value = JSON.parse(str);
 		getList();

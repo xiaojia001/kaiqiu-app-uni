@@ -37,7 +37,7 @@
 	import { computed } from 'vue';
 	import calcCell from '@/pages/event/components/calcCell.vue';
 	import { getGroupGames, update_score } from '@/api/match.js';
-	import { goGroupDetailPage } from '@/utils/goPage.js';
+	import { goGroupDetailPage, getPageParams } from '@/utils/goPage.js';
 	let params = {};
 	const popup = ref(null);
 	const groups = ref([]);
@@ -73,7 +73,8 @@
 	});
 	// #endif
 
-	onLoad(({ itemid, eventid }) => {
+	onLoad(() => {
+		const { itemid, eventid } = getPageParams()
 		params = { itemid, eventid };
 	});
 

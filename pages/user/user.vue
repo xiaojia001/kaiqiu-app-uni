@@ -189,7 +189,7 @@
 <script setup>
 	import { computed, shallowRef } from 'vue';
 	import { getAdvProfile, goFolloweeByUid, goCancelFolloweeByUid, getPageGamesByUid, getUserTags, getUserScores } from '@/api/user.js';
-	import { goUserPageByUid, goEventMainPage, goMatchDetailByGameid, goSearchPlayerPage } from '@/utils/goPage.js';
+	import { goUserPageByUid, goEventMainPage, goMatchDetailByGameid, goSearchPlayerPage, getPageParams } from '@/utils/goPage.js';
 	import { onPageScroll, onReachBottom } from '@dcloudio/uni-app';
 	import useMescroll from '@/uni_modules/mescroll-uni/hooks/useMescroll.js';
 	const { mescrollInit, downCallback, getMescroll } = useMescroll(onPageScroll, onReachBottom); // 调用mescroll的hook
@@ -222,7 +222,8 @@
 	});
 	const columns = shallowRef([])
 	const crtUid = ref('');
-	onLoad(({ uid }) => {
+	onLoad(() => {
+		const { uid } = getPageParams()
 		crtUid.value = uid || meInfo.value.user_id;
 		columns.value = [{
 				type: 'index',

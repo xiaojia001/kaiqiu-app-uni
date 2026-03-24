@@ -38,11 +38,13 @@
 <script setup>
 	import { getUserinfo0 } from '@/api/user.js'
 	import { getSignUpItems, createEnter } from '@/api/event.js'
+	import { getPageParams } from '@/utils/goPage.js'
 	const userInfo = ref({})
 	const itemList = ref([])
 	const activeItemId = ref(null)
 	let eventId = null
-	onLoad(({ eventid, itemid }) => {
+	onLoad(() => {
+		const { eventid, itemid } = getPageParams()
 		eventId = eventid
 		getUserinfo()
 		getSignUpItemsInfo({ eventid, itemid })

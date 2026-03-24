@@ -77,7 +77,7 @@
 <script setup>
 	import { computed } from 'vue'
 	import { getGameDetailByGameid } from '@/api/match.js'
-	import { goUserPageByUid, goEventMainPage, goMatchDetailByGameid } from '@/utils/goPage.js'
+	import { goUserPageByUid, goEventMainPage, goMatchDetailByGameid, getPageParams } from '@/utils/goPage.js'
 	const allInfo = ref({
 		current_game: {},
 		winCount1: 0,
@@ -127,7 +127,8 @@
 	const current_game = computed(() => {
 		return allInfo.value.current_game ?? {}
 	})
-	onLoad(({ gameid }) => {
+	onLoad(() => {
+		const { gameid } = getPageParams()
 		crtGameId.value = gameid
 		getGameDetailByGameid(gameid).then(res => {
 			allInfo.value = res.data

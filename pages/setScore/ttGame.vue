@@ -41,13 +41,14 @@
 <script setup>
 	import { computed } from 'vue'
 	import { getArrangeKnockout, update_tt_score } from '@/api/match.js'
-	import { goGroupDetailPage } from '@/utils/goPage.js'
+	import { goGroupDetailPage, getPageParams } from '@/utils/goPage.js'
 	let params = {}
 	const popup = ref(null)
 	const list = ref([])
 	const scorePreList = ['0:0', '2:0', '2:1', '1:2', '0:2', '3:0', '3:1', '3:2', '2:3', '1:3', '0:3', '4:0', '4:1', '4:2', '4:3', '3:4', '2:4', '1:4', '0:4']
 	const rowInfo = ref({ checkbox: [] })
-	onLoad(({ itemid, eventid }) => {
+	onLoad(() => {
+		const { itemid, eventid } = getPageParams()
 		params = { itemid, eventid }
 		refresh()
 	})
