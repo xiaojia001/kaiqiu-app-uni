@@ -1,21 +1,16 @@
 import Request from 'luch-request';
 
-const options = {
-	// 显示操作成功消息 默认不显示
+// 默认配置
+const defaultOptions = {
 	showSuccess: false,
-	// 成功提醒 默认使用后端返回值
 	successMsg: '',
-	// 显示失败消息 默认显示
 	showError: true,
-	// 失败提醒 默认使用后端返回信息
 	errorMsg: '',
-	// 显示请求时loading模态框 默认显示
 	showLoading: false,
-	// loading提醒文字
 	loadingMsg: '加载中',
-	// 需要授权才能请求 默认放开
 	auth: true,
-	// ...
+	retryCount: 3,
+	retryDelay: 1000,
 };
 
 // Loading全局实例
@@ -24,9 +19,7 @@ let LoadingInstance = {
 	count: 0,
 };
 
-let isRelanuch = false
-
-let flag = false
+let isRelanuch = false;
 
 /**
  * 关闭loading
@@ -37,7 +30,7 @@ function closeLoading() {
 }
 
 /**
- * @description 请求基础配置 可直接使用访问自定义请求
+ * @description 请求基础配置
  */
 const http = new Request({
 	// #ifdef APP
@@ -55,11 +48,66 @@ const http = new Request({
 	sslVerify: false,
 	// #endif
 	// #ifdef H5
-	// 跨域请求时是否携带凭证（cookies）仅H5支持（HBuilderX 2.6.15+）
 	withCredentials: false,
 	// #endif
-	custom: options,
+	custom: defaultOptions,
 });
+
+/**
+ * 判断是否应该重试
+ * @param {Object} error - 错误对象
+ * @param {number} currentRetry - 当前重试次数
+ * @param {number} maxRetry - 最大重试次数
+ * @returns {boolean}
+ */
+function shouldRetry(error, currentRetry, maxRetry) {
+	if (currentRetry >= maxRetry) return false;
+	
+	if (!error || !error.statusCode) return true;
+	
+	const noRetryCodes = [401, 403, 404, 429];
+	if (noRetryCodes.includes(error.statusCode)) return false;
+	
+	if (error.statusCode >= 500 && error.statusCode < 600) return true;
+	
+	if (error.errMsg?.includes('timeout')) return true;
+	
+	if (error.errMsg?.includes('network') || error.errMsg?.includes('fail')) return true;
+	
+	return false;
+}
+
+/**
+ * 等待指定时间
+ * @param {number} ms - 毫秒数
+ * @returns {Promise}
+ */
+function delay(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * 带重试的请求封装
+ * @param {Function} requestFn - 请求函数
+ * @param {Object} config - 请求配置
+ * @param {number} retryCount - 当前重试次数
+ * @returns {Promise}
+ */
+async function requestWithRetry(requestFn, config, retryCount = 0) {
+	const maxRetries = config.custom?.retryCount ?? defaultOptions.retryCount;
+	const retryDelay = config.custom?.retryDelay ?? defaultOptions.retryDelay;
+	
+	try {
+		return await requestFn();
+	} catch (error) {
+		if (shouldRetry(error, retryCount, maxRetries)) {
+			const delayTime = retryDelay * Math.pow(2, retryCount);
+			await delay(delayTime);
+			return requestWithRetry(requestFn, config, retryCount + 1);
+		}
+		throw error;
+	}
+}
 
 /**
  * @description 请求拦截器
@@ -70,11 +118,6 @@ http.interceptors.request.use(
 		if (config.custom.ContentType) {
 			config.header['Content-Type'] = config.custom.ContentType;
 		}
-		// }
-		// if (config.custom.auth && !uni.getStorageSync('token')) {
-		// 	// showAuthModal();
-		// 	return Promise.reject();
-		// }
 		if (config.custom.showLoading) {
 			LoadingInstance.count++;
 			LoadingInstance.count === 1 &&
@@ -125,7 +168,6 @@ http.interceptors.response.use(
 		return Promise.resolve(response.data);
 	},
 	(error) => {
-		// const userStore = $store('user');
 		let errorMessage = '网络请求出错';
 		if (error !== undefined) {
 			switch (error.statusCode) {
@@ -139,26 +181,24 @@ http.interceptors.response.use(
 						errorMessage = '请先登录';
 					}
 					if (error.config.custom.noToLogin) {
-						break
+						break;
 					}
 					if (!isRelanuch) {
-						isRelanuch = true
+						isRelanuch = true;
 						uni.showToast({
 							title: errorMessage,
 							icon: 'none',
 							mask: true,
 						});
 						setTimeout(() => {
-							isRelanuch = false
-						}, 2500)
+							isRelanuch = false;
+						}, 2500);
 						setTimeout(() => {
 							uni.reLaunch({
-								url: '/pages/login/login'
-							})
-						}, 1500)
+								url: '/pages/login/login',
+							});
+						}, 1500);
 					}
-					// userStore.logout(true);
-					// showAuthModal();
 					break;
 				case 403:
 					errorMessage = '拒绝访问';
@@ -191,7 +231,7 @@ http.interceptors.response.use(
 					errorMessage = 'HTTP版本不受支持';
 					break;
 			}
-			if (error.errMsg.includes('timeout')) errorMessage = '请求超时';
+			if (error.errMsg?.includes('timeout')) errorMessage = '请求超时';
 		}
 
 		if (error && error.config) {
@@ -205,18 +245,29 @@ http.interceptors.response.use(
 			error.config.custom.showLoading && closeLoading();
 		}
 
-		return false;
+		return Promise.reject(error);
 	},
 );
 
-const request = (config) => {
-	return http.middleware(config);
-};
+/**
+ * 执行请求（带重试机制）
+ * @param {Object} config - 请求配置
+ * @returns {Promise}
+ */
+function executeRequest(config) {
+	const requestFn = () => http.middleware(config);
+	return requestWithRetry(requestFn, config, 0);
+}
 
+const request = (config) => {
+	return executeRequest(config);
+};
 
 export default {
-	get: config => request({ ...config, method: 'GET' }),
-	post: config => request({ ...config, method: 'POST' }),
-	put: config => request({ ...config, method: 'PUT' }),
-	delete: config => request({ ...config, method: 'DELETE' })
+	get: (config) => request({ ...config, method: 'GET' }),
+	post: (config) => request({ ...config, method: 'POST' }),
+	put: (config) => request({ ...config, method: 'PUT' }),
+	delete: (config) => request({ ...config, method: 'DELETE' }),
 };
+
+export { http };

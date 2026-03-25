@@ -48,7 +48,7 @@
 		eventId = eventid
 		getUserinfo()
 		getSignUpItemsInfo({ eventid, itemid })
-		activeItemId.value = itemid == 'undefined' ? null : itemid
+		activeItemId.value = !itemid || itemid === 'undefined' || itemid === 'null' ? null : itemid
 	})
 
 	function getSex(sex = 1) {

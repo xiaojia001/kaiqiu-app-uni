@@ -47,7 +47,8 @@ export function parseUrlParams(options = {}) {
 	for (const key in options) {
 		const value = options[key]
 		if (typeof value === 'string') {
-			decodedOptions[key] = decodeURIComponent(value)
+			const decoded = decodeURIComponent(value)
+			decodedOptions[key] = decoded === 'undefined' || decoded === 'null' ? undefined : decoded
 		} else {
 			decodedOptions[key] = value
 		}
@@ -61,7 +62,13 @@ export function parseUrlParams(options = {}) {
  */
 export function getPageParams() {
 	const pages = getCurrentPages()
+	if (!pages || pages.length === 0) {
+		return {}
+	}
 	const currentPage = pages[pages.length - 1]
+	if (!currentPage || !currentPage.$page || !currentPage.$page.options) {
+		return {}
+	}
 	const { options } = currentPage.$page
 	return parseUrlParams(options)
 }

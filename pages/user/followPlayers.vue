@@ -59,7 +59,14 @@
 
 	const upCallback = (mescroll) => {
 		getUserFolloweesList().then(res => {
-			list.value = res.data?.followeesList || []
+			const followeesList = res.data?.followeesList || []
+			// 初始化每个关注人的比赛列表，确保数据健壮
+			followeesList.forEach(item => {
+				if (!item.enrolledMatchList) {
+					item.enrolledMatchList = []
+				}
+			})
+			list.value = followeesList
 			activePlayer.value = ''
 			mescroll.endSuccess(list.value.length, false);
 		}).catch(() => {
