@@ -1,11 +1,5 @@
 <template>
-	<scroll-view
-		class="page-container"
-		scroll-y
-		:refresher-enabled="true"
-		:refresher-triggered="isRefreshing"
-		@refresherrefresh="onRefresh"
-	>
+	<scroll-view class="page-container" scroll-y :refresher-enabled="true" :refresher-triggered="isRefreshing" @refresherrefresh="onRefresh">
 		<view class="text-#000">
 			<view class="top-bg">
 				<view class="poster-box bg-#fff">
@@ -76,234 +70,242 @@
 </template>
 
 <script setup>
-import { getEventDetaiByIdAndLocation, get_member_detail } from '@/api/event.js'
-import { goGymDetailPage, getPageParams } from '@/utils/goPage.js'
-import mainDetail from './components/mainDetail.vue'
-import groupDetail from './components/groupDetail.vue'
-import scoreDetail from './components/scoreDetail.vue'
-import scoreChange from './components/scoreChange.vue'
-import teamInfoTable from './components/teamInfoTable.vue'
-import { computed, ref } from 'vue'
+	import { getEventDetaiByIdAndLocation, get_member_detail } from '@/api/event.js'
+	import { goGymDetailPage, getPageParams } from '@/utils/goPage.js'
+	import mainDetail from './components/mainDetail.vue'
+	import groupDetail from './components/groupDetail.vue'
+	import scoreDetail from './components/scoreDetail.vue'
+	import scoreChange from './components/scoreChange.vue'
+	import teamInfoTable from './components/teamInfoTable.vue'
+	import { computed, ref } from 'vue'
 
-const { location } = useStore('user')
+	const { location } = useStore('user')
 
-const tabList = ['详情', '赛程', '成绩', '积分']
-const eventDetail = ref({})
-const subEventList = ref([])
-const teamObj = ref({})
-const crtTeamList = ref({ name: '', list: [] })
-const teamPopup = ref(null)
-let ifTT_obj = {}
+	const tabList = ['详情', '赛程', '成绩', '积分']
+	const eventDetail = ref({})
+	const subEventList = ref([])
+	const teamObj = ref({})
+	const crtTeamList = ref({ name: '', list: [] })
+	const teamPopup = ref(null)
+	let ifTT_obj = {}
 
-const activeItemId = ref(null)
-let crtId = ''
-const activeTab = ref(0)
+	const activeItemId = ref(null)
+	let crtId = ''
+	const activeTab = ref(0)
+	
+	const memberLoaded = ref(false)
 
-// 页面级刷新状态
-const isRefreshing = ref(false)
+	// 页面级刷新状态
+	const isRefreshing = ref(false)
 
-// 子组件引用
-const groupDetailRef = ref(null)
-const scoreDetailRef = ref(null)
-const scoreChangeRef = ref(null)
+	// 子组件引用
+	const groupDetailRef = ref(null)
+	const scoreDetailRef = ref(null)
+	const scoreChangeRef = ref(null)
 
-onLoad(() => {
-	const { id, itemId } = getPageParams()
-	crtId = id
-	getEventDetail(id)
-	activeItemId.value = itemId
-})
+	onLoad(() => {
+		const { id, itemId } = getPageParams()
+		crtId = id
+		console.log(1111);
+		getEventDetail(id)
+		activeItemId.value = itemId
+	})
 
-onShow(() => {
-	if (crtId && activeItemId.value) {
-		getEventDetail(crtId)
-	}
-})
-
-const crtItem = computed(() => {
-	let obj = subEventList.value.find(v => v.id === activeItemId.value) ?? {}
-	return { ...obj, ifTT: ifTT_obj[activeItemId.value] > 0 }
-})
-
-// 切换Tab
-function switchTab(index) {
-	activeTab.value = index
-}
-
-// 切换项目
-function switchItem(id) {
-	activeItemId.value = id
-}
-
-// 页面级下拉刷新处理 - 根据当前Tab刷新对应数据
-async function onRefresh() {
-	isRefreshing.value = true
-
-	try {
-		// 始终刷新赛事基本信息
-		await getEventDetail(crtId)
-
-		// 根据当前Tab刷新对应数据
-		switch (activeTab.value) {
-			case 1: // 赛程
-				await groupDetailRef.value?.refresh()
-				break
-			case 2: // 成绩
-				await scoreDetailRef.value?.refresh()
-				break
-			case 3: // 积分
-				await scoreChangeRef.value?.refresh()
-				break
+	onShow(() => {
+		const { id, itemId } = getPageParams()
+		crtId = id
+		if (crtId && activeItemId.value) {
+			getEventDetail(crtId)
 		}
-	} catch (e) {
-		console.error('Refresh error:', e)
-	} finally {
-		isRefreshing.value = false
+	})
+
+	const crtItem = computed(() => {
+		let obj = subEventList.value.find(v => v.id === activeItemId.value) ?? {}
+		return { ...obj, ifTT: ifTT_obj[activeItemId.value] > 0 }
+	})
+
+	// 切换Tab
+	function switchTab(index) {
+		activeTab.value = index
 	}
-}
 
-function goMemberList() {
-	const { eventid, title } = eventDetail.value
-	const { id, name } = crtItem.value
-	let obj = { id, event_name: title, match_id: eventid, match_name: name }
-	uni.navigateTo({
-		url: `/pages/event/memberList?matchStr=${encodeURIComponent(JSON.stringify(obj))}`
-	})
-}
-
-function jumpMap() {
-	if (!eventDetail.value.location) return
-	let { lat, lng, location } = eventDetail.value
-	uni.openLocation({
-		address: location,
-		latitude: lat,
-		longitude: lng
-	})
-}
-
-function toMakeCall() {
-	uni.makePhoneCall({
-		phoneNumber: eventDetail.value.mobile
-	})
-}
-
-async function getEventDetail(id) {
-	const [lng, lat] = uni.getStorageSync('userLocation' ?? [])
-	const res = await getEventDetaiByIdAndLocation({ id, lng, lat })
-	eventDetail.value = res.data?.detail ?? {}
-	subEventList.value = res.data?.items ?? []
-	ifTT_obj = res.data?.ifTT ?? {}
-
-	if (subEventList.value.length && !activeItemId.value) {
-		activeItemId.value = subEventList.value[0].id
-		await loadMemberDetail()
+	// 切换项目
+	function switchItem(id) {
+		activeItemId.value = id
 	}
-}
 
-async function loadMemberDetail() {
-	const res = await get_member_detail({
-		match_id: eventDetail.value.eventid,
-		id: activeItemId.value
-	})
-	const members = res.data?.list ?? []
-	let obj = members.reduce((all, crt) => {
-		if (crt.teamid) {
-			all.lastTeamid = crt.teamid
-			all.lastTeamname = crt.name
-			all[crt.teamid] = []
-			all[crt.name] = []
-		} else {
-			if (all.lastTeamid) {
-				all[all.lastTeamid].push(crt)
-				all[all.lastTeamname].push(crt)
+	// 页面级下拉刷新处理 - 根据当前Tab刷新对应数据
+	async function onRefresh() {
+		isRefreshing.value = true
+
+		try {
+			// 始终刷新赛事基本信息
+			await getEventDetail(crtId)
+
+			// 根据当前Tab刷新对应数据
+			switch (activeTab.value) {
+				case 1: // 赛程
+					await groupDetailRef.value?.refresh()
+					break
+				case 2: // 成绩
+					await scoreDetailRef.value?.refresh()
+					break
+				case 3: // 积分
+					await scoreChangeRef.value?.refresh()
+					break
 			}
+		} catch (e) {
+			console.error('Refresh error:', e)
+		} finally {
+			isRefreshing.value = false
 		}
-		return all
-	}, {})
-	Reflect.deleteProperty(obj, 'lastTeamname')
-	Reflect.deleteProperty(obj, 'lastTeamid')
-	teamObj.value = obj
-}
+	}
 
-function previewImage(url) {
-	url && uni.previewImage({ urls: [url] })
-}
+	function goMemberList() {
+		const { eventid, title } = eventDetail.value
+		const { id, name } = crtItem.value
+		let obj = { id, event_name: title, match_id: eventid, match_name: name }
+		uni.navigateTo({
+			url: `/pages/event/memberList?matchStr=${encodeURIComponent(JSON.stringify(obj))}`
+		})
+	}
 
-function showTeamInfo(info) {
-	crtTeamList.value = { name: info, list: teamObj.value[info] ?? [] }
-	teamPopup.value.open()
-}
+	function jumpMap() {
+		if (!eventDetail.value.location) return
+		let { lat, lng, location } = eventDetail.value
+		uni.openLocation({
+			address: location,
+			latitude: lat,
+			longitude: lng
+		})
+	}
+
+	function toMakeCall() {
+		uni.makePhoneCall({
+			phoneNumber: eventDetail.value.mobile
+		})
+	}
+
+	async function getEventDetail(id) {
+		const [lng, lat] = uni.getStorageSync('userLocation' ?? [])
+		const res = await getEventDetaiByIdAndLocation({ id, lng, lat })
+		eventDetail.value = res.data?.detail ?? {}
+		subEventList.value = res.data?.items ?? []
+		ifTT_obj = res.data?.ifTT ?? {}
+
+		if (subEventList.value.length && !activeItemId.value) {
+			activeItemId.value = subEventList.value[0].id
+		}
+		if (activeItemId.value && !memberLoaded.value) {
+			await loadMemberDetail()
+			memberLoaded.value = true
+		}
+	}
+
+	async function loadMemberDetail() {
+		const res = await get_member_detail({
+			match_id: eventDetail.value.eventid,
+			id: activeItemId.value
+		})
+		const members = res.data?.list ?? []
+		let obj = members.reduce((all, crt) => {
+			if (crt.teamid) {
+				all.lastTeamid = crt.teamid
+				all.lastTeamname = crt.name
+				all[crt.teamid] = []
+				all[crt.name] = []
+			} else {
+				if (all.lastTeamid) {
+					all[all.lastTeamid].push(crt)
+					all[all.lastTeamname].push(crt)
+				}
+			}
+			return all
+		}, {})
+		Reflect.deleteProperty(obj, 'lastTeamname')
+		Reflect.deleteProperty(obj, 'lastTeamid')
+		teamObj.value = obj
+	}
+
+	function previewImage(url) {
+		url && uni.previewImage({ urls: [url] })
+	}
+
+	function showTeamInfo(info) {
+		crtTeamList.value = { name: info, list: teamObj.value[info] ?? [] }
+		teamPopup.value.open()
+	}
 </script>
 
 <style lang="scss" scoped>
-.page-container {
-	height: 100vh;
-}
-
-.top-bg {
-	position: relative;
-	height: 400rpx;
-
-	&::after {
-		top: 0;
-		content: "";
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		background-color: #F89703;
-		border-bottom-left-radius: 300rpx;
-		border-bottom-right-radius: 300rpx;
+	.page-container {
+		height: 100vh;
 	}
 
-	.poster-box {
-		top: 60rpx;
-		height: 360rpx;
-		position: absolute;
-		margin: 0 40rpx;
+	.top-bg {
 		position: relative;
-		z-index: 2;
-	}
-}
+		height: 400rpx;
 
-.active-tab {
-	color: #39B54A;
-	position: relative;
+		&::after {
+			top: 0;
+			content: "";
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			background-color: #F89703;
+			border-bottom-left-radius: 300rpx;
+			border-bottom-right-radius: 300rpx;
+		}
 
-	&::after {
-		content: "";
-		position: absolute;
-		bottom: -20rpx;
-		width: 80%;
-		height: 4rpx;
-		background-color: #39B54A;
-	}
-}
-
-.contact-btn {
-	height: 50rpx;
-	padding: 0 16rpx;
-	color: #39B54A;
-	border: 1rpx solid #39B54A;
-}
-
-.item-tag {
-	margin-bottom: 20rpx;
-	font-weight: 600;
-	box-sizing: border-box;
-	border: 1rpx solid #39B54A;
-	color: #39B54A;
-
-	&:nth-child(even) {
-		margin-left: 20rpx;
+		.poster-box {
+			top: 60rpx;
+			height: 360rpx;
+			position: absolute;
+			margin: 0 40rpx;
+			position: relative;
+			z-index: 2;
+		}
 	}
 
-	&.active {
-		background-color: #39B54A;
-		color: #fff;
-	}
-}
+	.active-tab {
+		color: #39B54A;
+		position: relative;
 
-.tab-content {
-	min-height: 400rpx;
-}
+		&::after {
+			content: "";
+			position: absolute;
+			bottom: -20rpx;
+			width: 80%;
+			height: 4rpx;
+			background-color: #39B54A;
+		}
+	}
+
+	.contact-btn {
+		height: 50rpx;
+		padding: 0 16rpx;
+		color: #39B54A;
+		border: 1rpx solid #39B54A;
+	}
+
+	.item-tag {
+		margin-bottom: 20rpx;
+		font-weight: 600;
+		box-sizing: border-box;
+		border: 1rpx solid #39B54A;
+		color: #39B54A;
+
+		&:nth-child(even) {
+			margin-left: 20rpx;
+		}
+
+		&.active {
+			background-color: #39B54A;
+			color: #fff;
+		}
+	}
+
+	.tab-content {
+		min-height: 400rpx;
+	}
 </style>

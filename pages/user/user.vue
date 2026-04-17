@@ -1,7 +1,7 @@
 <template>
-	<mescroll-body @init="mescrollInit" top="0" @down="downCallback" @up="upCallback" :down="{ bgColor: '#248DFF' }" :up="{ toTop: { src: '' } }">
+	<mescroll-body @init="mescrollInit" top="0" @down="downCallback" @up="upCallback" :down="{ bgColor: themeColor }" :up="{ toTop: { src: '' } }">
 		<view class="bg-#E7E6E8">
-			<view class="f-c-c flex-col pt40rpx bg-#248DFF text-#fff">
+			<view class="f-c-c flex-col pt40rpx user-header text-#fff" :style="{ background: themeColor }">
 				<view class="w220rpx h220rpx rounded-half bg-white border-6rpx border-solid border-#ffffff">
 					<image class="w-full h-full rounded-half" :src="userInfo?.realpic" mode="" @click="previewImage(userInfo?.realpic)"></image>
 				</view>
@@ -58,31 +58,31 @@
 			</view>
 			<view class="mt40rpx p20rpx bg-#FFFEFF text-28rpx text-#8F8E96">
 				<view v-if="userInfo.Top3OfBeatUsernameScore">
-					<view class="info-title">击败分数最高前三名:</view>
+					<view class="info-title" :style="{ borderColor: themeColor }">击败分数最高前三名:</view>
 					<view class="pl50rpx mt6rpx" v-for="(item, i) in userInfo.Top3OfBeatUsernameScore" :key="i" @click="goListUser('Top3OfBeat', i)">{{ item }}</view>
 				</view>
 			</view>
 			<view class="p20rpx bg-#FFFEFF text-28rpx text-#8F8E96">
 				<view v-if="userInfo.TopPlayerUsernameScore">
-					<view class="info-title">交手分数最高前三名:</view>
+					<view class="info-title" :style="{ borderColor: themeColor }">交手分数最高前三名:</view>
 					<view class="pl50rpx mt6rpx" v-for="(item, i) in userInfo.TopPlayerUsernameScore" :key="i" @click="goListUser('TopPlayer', i)">{{ item }}</view>
 				</view>
 			</view>
 			<view class="p20rpx bg-#FFFEFF text-28rpx text-#8F8E96">
 				<view v-if="userInfo.Top3ManOfBeatUsernameScore">
-					<view class="info-title">击败男子最高前三名:</view>
+					<view class="info-title" :style="{ borderColor: themeColor }">击败男子最高前三名:</view>
 					<view class="pl50rpx mt6rpx" v-for="(item, i) in userInfo.Top3ManOfBeatUsernameScore" :key="i" @click="goListUser('Top3ManOfBeat', i)">{{ item }}</view>
 				</view>
 			</view>
 			<view class="p20rpx bg-#FFFEFF text-28rpx text-#8F8E96">
 				<view v-if="userInfo.Top3WomanOfBeatUsernameScore">
-					<view class="info-title">击败女子最高前三名:</view>
+					<view class="info-title" :style="{ borderColor: themeColor }">击败女子最高前三名:</view>
 					<view class="pl50rpx mt6rpx" v-for="(item, i) in userInfo.Top3WomanOfBeatUsernameScore" :key="i" @click="goListUser('Top3WomanOfBeat', i)">{{ item }}</view>
 				</view>
 			</view>
 			<view v-if="userInfo.kuzhu" class="p20rpx bg-#FFFEFF text-28rpx text-#8F8E96">
 				<view>
-					<view class="info-title">苦主:</view>
+					<view class="info-title" :style="{ borderColor: themeColor }">苦主:</view>
 					<view class="pl50rpx mt6rpx" v-for="(item, i) in kuzhu" :key="i">
 						<text @click="goUserPageByUid(item.uid)">{{ item.description1 }}</text>
 						<text @click="goMatchInfo('KuZhu', i)">{{ item.description2 }}</text>
@@ -91,7 +91,7 @@
 			</view>
 			<view v-if="userInfo.fuxing" class="p20rpx bg-#FFFEFF text-28rpx text-#8F8E96">
 				<view>
-					<view class="info-title">福星:</view>
+					<view class="info-title" :style="{ borderColor: themeColor }">福星:</view>
 					<view class="pl50rpx mt6rpx" v-for="(item, i) in fuxing" :key="i">
 						<text @click="goUserPageByUid(item.uid)">{{ item.description1 }}</text>
 						<text @click="goMatchInfo('FuXing', i)">{{ item.description2 }}</text>
@@ -100,31 +100,23 @@
 			</view>
 			<view class="p20rpx bg-#FFFEFF text-28rpx text-#8F8E96">
 				<view v-if="oftenPlayer.length">
-					<view class="info-title">经常交手:</view>
+					<view class="info-title" :style="{ borderColor: themeColor }">经常交手:</view>
 					<view class="pl30rpx mt6rpx">
 						<view class="ml-20rpx" v-for="(item, i) in oftenPlayer" :key="i" @click="goSearchPlayer(item)">{{ item }}</view>
 					</view>
 				</view>
 			</view>
-			<!-- <view class="p20rpx bg-#FFFEFF text-28rpx text-#8F8E96">
-				<view v-if="oftenPlayer.length">
-					<view class="info-title">maxConsWin:</view>
-					<view class="pl30rpx mt6rpx">
-						<view class="ml-20rpx" @click="goMatchDetailByGameid(userInfo.maxConsWinLastGameId)">{{ userInfo.maxConsWin??0 }}</view>
-					</view>
-				</view>
-			</view> -->
 			<view class="p20rpx bg-#FFFEFF text-28rpx text-#8F8E96">
 				<view v-if="userInfo.latest_headtohead_gameid">
-					<view @click="goMatchDetailByGameid(userInfo.latest_headtohead_gameid)" class="info-title">
+					<view @click="goMatchDetailByGameid(userInfo.latest_headtohead_gameid)" class="info-title" :style="{ borderColor: themeColor }">
 						我与{{ userInfo.realname }}的交战历史
-						<text class="text-#248DFF">详情</text>
+						<text class="info-link" :style="{ color: themeColor }">详情</text>
 					</view>
 				</view>
 			</view>
 			<view v-if="userInfo.path?.length" class="mt-4px p20rpx bg-#FFFEFF text-28rpx text-#8F8E96">
-				<view class="info-title">
-					{{userInfo.realname}}<text class="font-600 text-#248DFF mx4rpx">{{userInfo.pathNum}}阶</text>挑战世界冠军<text class="font-600 text-#248DFF mx4rpx">{{userInfo.champion}}</text>成功
+				<view class="info-title" :style="{ borderColor: themeColor }">
+					{{userInfo.realname}}<text class="font-600 info-link" :style="{ color: themeColor }">{{userInfo.pathNum}}阶</text>挑战世界冠军<text class="font-600 info-link" :style="{ color: themeColor }">{{userInfo.champion}}</text>成功
 				</view>
 				<view class="mt6rpx">
 					<view v-for="(item,i) in userInfo.path" :key="i" class="flex justify-between items-center mt14px">
@@ -144,14 +136,14 @@
 			</view>
 			<view class="mt-4px p20rpx bg-#FFFEFF text-28rpx text-#8F8E96">
 				<view v-if="userInfo.allCities">
-					<view class="info-title">曾参加比赛城市:</view>
+					<view class="info-title" :style="{ borderColor: themeColor }">曾参加比赛城市:</view>
 					<view class="pl30rpx mt6rpx flex flex-wrap city-gap">
 						<text v-for="(item, i) in userInfo.allCities" :key="i">{{ item }}</text>
 					</view>
 				</view>
 			</view>
 			<view v-if="userInfo.honors?.length" class="mt-4px p20rpx bg-#FFFEFF text-28rpx text-#8F8E96">
-				<view class="info-title">近期荣耀:</view>
+				<view class="info-title" :style="{ borderColor: themeColor }">近期荣耀:</view>
 				<view class="mt12rpx flex items-center" v-for="(item, i) in userInfo.honors" :key="i" @click="goEventMainPage(item)">
 					<view class="w40rpx h40rpx">
 						<image class="w-full h-full" :src="item.honor" mode=""></image>
@@ -160,7 +152,7 @@
 				</view>
 			</view>
 			<view class="mt-4px bg-#FFFEFF pt20rpx text-28rpx text-#8F8E96">
-				<view class="info-title mx20rpx">近期战绩:</view>
+				<view class="info-title mx20rpx" :style="{ borderColor: themeColor }">近期战绩:</view>
 				<zb-table show-heade :columns="columns" stripe :fit="false" border :data="games" :cell-style="setCellStyle" :cell-header-style="setCellHeaderStyle" @cellClick="cellClick">
 					<template #username1="{ row }">
 						<template v-if="row.flag === '0'">{{ row.username1 }}</template>
@@ -192,7 +184,7 @@
 	import { goUserPageByUid, goEventMainPage, goMatchDetailByGameid, goSearchPlayerPage, getPageParams } from '@/utils/goPage.js';
 	import { onPageScroll, onReachBottom } from '@dcloudio/uni-app';
 	import useMescroll from '@/uni_modules/mescroll-uni/hooks/useMescroll.js';
-	const { mescrollInit, downCallback, getMescroll } = useMescroll(onPageScroll, onReachBottom); // 调用mescroll的hook
+	const { mescrollInit, downCallback, getMescroll } = useMescroll(onPageScroll, onReachBottom);
 	const userInfo = ref({
 		Top3ManOfBeatUsernameScore: [],
 		Top3WomanOfBeatUsernameScore: [],
@@ -222,6 +214,22 @@
 	});
 	const columns = shallowRef([])
 	const crtUid = ref('');
+	
+	// 性别主题色配置
+	const themeColors = {
+		male: '#248DFF',    // 蓝色 - 男
+		female: '#FF6B9D',  // 粉色 - 女
+		default: '#248DFF' // 默认蓝色
+	}
+	
+	// 根据性别获取主题色
+	const themeColor = computed(() => {
+		const sex = userInfo.value?.sex
+		if (sex === '男') return themeColors.male
+		if (sex === '女') return themeColors.female
+		return themeColors.default
+	})
+	
 	onLoad(() => {
 		const { uid } = getPageParams()
 		crtUid.value = uid || meInfo.value.user_id;
@@ -265,7 +273,6 @@
 				width: uni.upx2px(100)
 			}
 		]
-		// getMainPageInfo(uid);
 	});
 	const description = computed(() => {
 		if (!userInfo.value.description) return '';
@@ -331,11 +338,9 @@
 	}
 
 	function wrapNumbersWithSpan(text) {
-		// 匹配数字和百分比的正则表达式
 		const numberPattern = /\d+(\.\d+)?%?/g;
-
 		return text.replace(numberPattern, (match) => {
-			return `<span style="color:#05A2EB">${match}</span>`;
+			return `<span style="color:${themeColor.value}">${match}</span>`;
 		});
 	}
 
@@ -353,8 +358,8 @@
 			},
 			yAxis: {
 				type: 'value',
-				min, // 最小值设为数据最小值
-				max, // 最大值设为数据最大值
+				min,
+				max,
 			},
 			series: [{
 				name: '赛后分数',
@@ -363,18 +368,18 @@
 				showSymbol: true,
 				symbolSize: 2,
 				itemStyle: {
-					color: '#1990ff'
+					color: themeColor.value
 				},
 				lineStyle: {
-					color: '#248DFF'
+					color: themeColor.value
 				},
 				markPoint: {
 					data: [
 						{ type: 'max', name: '最大值' },
 						{ type: 'min', name: '最小值' }
 					],
-					symbol: 'circle', // 使用气泡样式
-					symbolSize: 3, // 调整气泡大小
+					symbol: 'circle',
+					symbolSize: 3,
 					label: {
 						show: true,
 						fontWeight: '400',
@@ -385,9 +390,9 @@
 			}, ],
 			grid: [{ left: 40, right: 15, top: 60, bottom: 40 }],
 			tooltip: {
-				trigger: 'axis', // 坐标轴触发
+				trigger: 'axis',
 				width: 100,
-				backgroundColor: 'rgba(0,0,0,0.6)', // 设置背景色为浅蓝色[citation:2]
+				backgroundColor: 'rgba(0,0,0,0.6)',
 				textStyle: { color: 'white' },
 				position: [0, 0],
 				axisPointer: {
@@ -408,13 +413,12 @@
 
 	function getMainPageInfo(uid) {
 		!echartInit && getUserScores(uid).then(res => {
-			// console.log(res.data);
 			scoreChangeData.value = res.data ?? []
-			// echartInit && setChartData()
 		})
 		return getAdvProfile(uid).then((res) => {
-			// console.log(res);
 			userInfo.value = res.data;
+			setNavigationBarColor(themeColor.value)
+			setChartData()
 			games.value = (res.data?.games?.data ?? []).map((v, i) => {
 				return { ...v, bifen: `${v.result1}:${v.result2}` };
 			});
@@ -428,9 +432,9 @@
 			try {
 				getUserShowTags(crtUid.value)
 				await getMainPageInfo(crtUid.value);
-				mescroll.endSuccess(games.value.length); // 请求成功, 结束加载
+				mescroll.endSuccess(games.value.length);
 			} catch (e) {
-				mescroll.endErr(); // 请求失败, 结束加载
+				mescroll.endErr();
 			}
 		} else {
 			getPageGamesByUid(crtUid.value, mescroll.num)
@@ -439,17 +443,17 @@
 						return { ...v, bifen: `${v.result1}:${v.result2}` };
 					});
 					games.value = games.value.concat(list);
-					mescroll.endSuccess(list.length); // 请求成功, 结束加载
+					mescroll.endSuccess(list.length);
 				})
 				.catch((e) => {
-					mescroll.endErr(); // 请求失败, 结束加载
+					mescroll.endErr();
 				});
 		}
 	};
 
 	function refresh() {
-		games.value = []; // 先置空列表,显示加载进度
-		getMescroll().resetUpScroll(true); // 再刷新列表数据
+		games.value = [];
+		getMescroll().resetUpScroll(true);
 	}
 
 	function setCellHeaderStyle({ column, columnIndex }) {
@@ -465,9 +469,6 @@
 	}
 
 	function cellClick(row, index, column) {
-		// if (column.name === 'username2') {
-		// 	return goUserPageByUid(row.uid2);
-		// }
 		if (column.name === 'bifen' && row.flag === '0') {
 			return goMatchDetailByGameid(row.gameid);
 		}
@@ -497,6 +498,17 @@
 	function goSearchPlayer(player) {
 		goSearchPlayerPage(player.split('(')[0])
 	}
+
+	function setNavigationBarColor(color) {
+		uni.setNavigationBarColor({
+			frontColor: '#ffffff',
+			backgroundColor: color,
+			animation: {
+				duration: 300,
+				timingFunc: 'easeInOut'
+			}
+		});
+	}
 </script>
 
 <style scoped lang="scss">
@@ -516,7 +528,12 @@
 		line-height: 50rpx;
 		height: 50rpx;
 		position: relative;
-		border-left: 12rpx solid #248dff;
+		border-left: 12rpx solid;
+		transition: border-color 0.3s;
+	}
+
+	.info-link {
+		transition: color 0.3s;
 	}
 
 	.city-gap {

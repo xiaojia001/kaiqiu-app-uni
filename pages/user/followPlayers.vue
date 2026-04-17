@@ -61,11 +61,11 @@
 		getUserFolloweesList().then(res => {
 			const followeesList = res.data?.followeesList || []
 			// 初始化每个关注人的比赛列表，确保数据健壮
-			followeesList.forEach(item => {
-				if (!item.enrolledMatchList) {
-					item.enrolledMatchList = []
-				}
-			})
+			// followeesList.forEach(item => {
+			// 	if (!item.enrolledMatchList) {
+			// 		item.enrolledMatchList = []
+			// 	}
+			// })
 			list.value = followeesList
 			activePlayer.value = ''
 			mescroll.endSuccess(list.value.length, false);
@@ -103,10 +103,10 @@
 	// 一键查询所有人的近期比赛
 	async function queryAllEvents() {
 		if (isLoading.value) return
-		
+
 		isLoading.value = true
 		uni.showLoading({ title: '查询中...' })
-		
+
 		try {
 			// 遍历所有关注人，查询比赛信息
 			for (const item of list.value) {
@@ -116,7 +116,7 @@
 					})
 				}
 			}
-			
+
 			uni.showToast({
 				title: '查询完成',
 				icon: 'success'
@@ -183,6 +183,7 @@
 			opacity: 0;
 			transform: translateY(-10rpx);
 		}
+
 		to {
 			opacity: 1;
 			transform: translateY(0);
