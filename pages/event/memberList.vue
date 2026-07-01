@@ -3,6 +3,10 @@
 		<view class="bg-#FFFEFF text-#39B54A px20rpx pb20rpx">{{ baseInfo.event_name }}</view>
 		<view class="bg-#FFFEFF text-#666 px20rpx flex items-center h80rpx mt2px justify-between">
 			<text>{{ baseInfo.match_name }}</text>
+			<view class="flex items-center gap-10rpx" @click="goAdvPage">
+				<text class="text-24rpx text-#39B54A">实时积分</text>
+				<uni-icons type="right" size="14" color="#39B54A"></uni-icons>
+			</view>
 		</view>
 		<zb-table show-heade :columns="columns" stripe :fit="false" border :data="cptList" :cell-style="setCellStyle" :cell-header-style="setCellHeaderStyle" @cellClick="cellClick">
 			<template #name="{row}">
@@ -148,6 +152,17 @@
 		}
 		return obj[sex]
 	}
+	
+	function goAdvPage() {
+		const params = encodeURIComponent(JSON.stringify(baseInfo.value));
+		uni.navigateTo({
+			url: `/pages/event/memberListAdv?matchStr=${params}`
+		});
+	}
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+	.gap-10rpx {
+		gap: 10rpx;
+	}
+</style>

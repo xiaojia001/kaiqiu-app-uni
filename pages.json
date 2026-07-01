@@ -59,6 +59,14 @@
 			}
 		},
 		{
+			"path": "pages/event/memberListAdv",
+			"style": {
+				"navigationBarTitleText": "参赛名单(实时)",
+				"navigationBarBackgroundColor": "#FFFEFF",
+				"navigationBarTextStyle": "black"
+			}
+		},
+		{
 			"path": "pages/main/selectCityPage",
 			"style": {
 				"navigationBarTitleText": "城市选择"

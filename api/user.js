@@ -85,7 +85,7 @@ export function getUserListPageByKey(params) {
 export function getDaySign() {
 	return http.post({
 		url: '/user/sign',
-		custom: presets.success
+		custom: mergeConfig(presets.success, { retryCount: 0 })
 	})
 }
 

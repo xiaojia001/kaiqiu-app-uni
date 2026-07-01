@@ -1,0 +1,2164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>乒乓球双打队友分析报告</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; padding: 20px; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    h1 { text-align: center; color: #333; margin-bottom: 30px; }
+    .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .card h2 { color: #1890ff; margin-bottom: 15px; border-bottom: 2px solid #1890ff; padding-bottom: 8px; }
+    .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
+    .player-card { border: 1px solid #e8e8e8; border-radius: 8px; padding: 15px; cursor: pointer; transition: all 0.3s; }
+    .player-card:hover { border-color: #1890ff; box-shadow: 0 4px 12px rgba(24,144,255,0.2); }
+    .player-card.active { border-color: #1890ff; background: #e6f7ff; }
+    .player-name { font-size: 18px; font-weight: bold; color: #333; margin-bottom: 8px; }
+    .player-info { font-size: 14px; color: #666; margin-bottom: 5px; }
+    .score-badge { display: inline-block; background: #1890ff; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+    .score-info { margin: 10px 0; padding: 8px; background: #f0f5ff; border-radius: 6px; font-size: 14px; }
+    .detail-section { display: none; }
+    .detail-section.active { display: block; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px 0; }
+    .stat-item { text-align: center; padding: 10px; background: #fafafa; border-radius: 6px; }
+    .stat-value { font-size: 24px; font-weight: bold; color: #1890ff; }
+    .stat-label { font-size: 12px; color: #666; }
+    .chart-container { height: 300px; margin: 20px 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 8px; text-align: left; border-bottom: 1px solid #eee; }
+    th:first-child, td:first-child { width: 120px; white-space: nowrap; }
+    th:nth-child(3), td:nth-child(3) { width: 100px; white-space: nowrap; }
+    th:nth-child(4), td:nth-child(4) { width: 60px; white-space: nowrap; text-align: center; }
+    td:nth-child(2) { }
+    th { background: #fafafa; font-weight: 600; }
+    tr:hover { background: #fafafa; }
+    .win { color: #52c41a; }
+    .lose { color: #ff4d4f; }
+    .tag { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 11px; margin-left: 5px; }
+    .tag-win { background: #d9ffb3; color: #52c41a; }
+    .tag-lose { background: #ffd9d9; color: #ff4d4f; }
+    .tag-team { background: #fff0f0; color: #fa8c16; }
+    .tag-knockout { background: #fff7e6; color: #fa8c16; }
+    .knockout { background: #fffbf0; }
+    .knockout-score { color: #fa8c16; font-weight: bold; }
+    .point-cell { font-family: monospace; }
+    .event-group { margin-bottom: 20px; padding: 10px; background: #fafafa; border-radius: 8px; }
+    .event-group h4 { margin: 10px 0; color: #333; }
+    .top-players { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+    .top-player { text-align: center; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 8px; }
+    .top-player.gold { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .top-player.silver { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .top-player.bronze { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+    .rank { font-size: 24px; margin-bottom: 5px; }
+    .top-name { font-weight: bold; font-size: 14px; }
+    .top-score { font-size: 12px; opacity: 0.9; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🏓 乒乓球双打队友分析报告</h1>
+    <div class="card">
+      <h2>🏆 TOP 5 推荐搭档</h2>
+      <div class="top-players">
+
+        <div class="top-player gold">
+          <div class="rank">🥇</div>
+          <div class="top-name">方戈 (方戈)</div>
+          <div class="top-score">积分: 1601</div>
+          <div class="top-score">评分: 56.8</div>
+        </div>
+        <div class="top-player silver">
+          <div class="rank">🥈</div>
+          <div class="top-name">宋峪轩 (宋峪轩)</div>
+          <div class="top-score">积分: 1600</div>
+          <div class="top-score">评分: 30.6</div>
+        </div>
+        <div class="top-player bronze">
+          <div class="rank">🥉</div>
+          <div class="top-name">陈晨橙 (陈钰鹏)</div>
+          <div class="top-score">积分: 1611</div>
+          <div class="top-score">评分: 30.5</div>
+        </div>
+        <div class="top-player ">
+          <div class="rank">4</div>
+          <div class="top-name">赖家老二 (赖发睿)</div>
+          <div class="top-score">积分: 1598</div>
+          <div class="top-score">评分: 26.6</div>
+        </div>
+        <div class="top-player ">
+          <div class="rank">5</div>
+          <div class="top-name">陈思汗1 (陈思汗)</div>
+          <div class="top-score">积分: 1605</div>
+          <div class="top-score">评分: 24.2</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>📊 所有选手数据</h2>
+      <div class="player-grid">
+
+        <div class="player-card" onclick="showDetail(0)" id="card-0">
+          <div class="player-name">方戈 (方戈) <span class="score-badge">1601分</span></div>
+          <div class="player-info">男 | 四川成都</div>
+          <div class="player-info">🏆 胜率: 56.5% | 双打: 80.0% | 综合评分: 56.8</div>
+        </div>
+        <div class="player-card" onclick="showDetail(1)" id="card-1">
+          <div class="player-name">宋峪轩 (宋峪轩) <span class="score-badge">1600分</span></div>
+          <div class="player-info">男 | 四川成都</div>
+          <div class="player-info">🏆 胜率: 68.0% | 双打: 0.0% | 综合评分: 30.6</div>
+        </div>
+        <div class="player-card" onclick="showDetail(2)" id="card-2">
+          <div class="player-name">陈晨橙 (陈钰鹏) <span class="score-badge">1611分</span></div>
+          <div class="player-info">男 | 四川成都</div>
+          <div class="player-info">🏆 胜率: 36.8% | 双打: 14.3% | 综合评分: 30.5</div>
+        </div>
+        <div class="player-card" onclick="showDetail(3)" id="card-3">
+          <div class="player-name">赖家老二 (赖发睿) <span class="score-badge">1598分</span></div>
+          <div class="player-info">男 | 四川成都</div>
+          <div class="player-info">🏆 胜率: 75.0% | 双打: 0.0% | 综合评分: 26.6</div>
+        </div>
+        <div class="player-card" onclick="showDetail(4)" id="card-4">
+          <div class="player-name">陈思汗1 (陈思汗) <span class="score-badge">1605分</span></div>
+          <div class="player-info">男 | 四川成都</div>
+          <div class="player-info">🏆 胜率: 60.9% | 双打: 0.0% | 综合评分: 24.2</div>
+        </div>
+        <div class="player-card" onclick="showDetail(5)" id="card-5">
+          <div class="player-name">小河马 (马晓晨) <span class="score-badge">1599分</span></div>
+          <div class="player-info">男 | 四川成都</div>
+          <div class="player-info">🏆 胜率: 66.7% | 双打: 0.0% | 综合评分: 23.8</div>
+        </div>
+        <div class="player-card" onclick="showDetail(6)" id="card-6">
+          <div class="player-name">翟贤 (翟贤) <span class="score-badge">1610分</span></div>
+          <div class="player-info">男 | 四川成都</div>
+          <div class="player-info">🏆 胜率: 61.9% | 双打: 0.0% | 综合评分: 23.4</div>
+        </div>
+        <div class="player-card" onclick="showDetail(7)" id="card-7">
+          <div class="player-name">张加菊 (张加菊) <span class="score-badge">1604分</span></div>
+          <div class="player-info">女 | 四川成都</div>
+          <div class="player-info">🏆 胜率: 55.6% | 双打: 0.0% | 综合评分: 23.1</div>
+        </div>
+        <div class="player-card" onclick="showDetail(8)" id="card-8">
+          <div class="player-name">阿原 (陈原) <span class="score-badge">1605分</span></div>
+          <div class="player-info">男 | 四川成都</div>
+          <div class="player-info">🏆 胜率: 60.0% | 双打: 0.0% | 综合评分: 22.3</div>
+        </div>
+        <div class="player-card" onclick="showDetail(9)" id="card-9">
+          <div class="player-name">Yaann (严俊杰) <span class="score-badge">1617分</span></div>
+          <div class="player-info">男 | 四川成都</div>
+          <div class="player-info">🏆 胜率: 52.0% | 双打: 0.0% | 综合评分: 21.6</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card detail-section" id="detail-0">
+      <h2>方戈 (方戈) - 详细数据 <span class="score-badge">1601分</span></h2>
+      <div class="score-info">
+        <span>📊 积分: 当前1601 | 年度最高1541 | 历史最高1601 | 历史最低1534</span>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-item"><div class="stat-value">56.5%</div><div class="stat-label">总胜率</div></div>
+        <div class="stat-item"><div class="stat-value">80.0%</div><div class="stat-label">双打胜率</div></div>
+        <div class="stat-item"><div class="stat-value">30</div><div class="stat-label">总场次</div></div>
+        <div class="stat-item"><div class="stat-value">50.0%</div><div class="stat-label">稳定性</div></div>
+      </div>
+      <div class="chart-container">
+        <canvas id="chart-0"></canvas>
+      </div>
+      <h3>📋 近期对局</h3>
+
+      <div class="event-group">
+        <h4>📍 202511214正宏体育单打U1600积分赛</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr>
+              <td>单打</td>
+              <td>方戈 vs Rickyyoung</td>
+              <td class="win"><span class="win">胜</span> 3:0</td>
+              <td class="win">+7</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>方戈 vs 叶昌梅</td>
+              <td class="win"><span class="win">胜</span> 3:0</td>
+              <td class="win">+4</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>方戈 vs 余冲</td>
+              <td class="win"><span class="win">胜</span> 3:1</td>
+              <td class="win">+10</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>方戈 vs 跳动音符</td>
+              <td class="win"><span class="win">胜</span> 3:1</td>
+              <td class="win">+6</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>方戈 vs 吴瀚2</td>
+              <td class="lose"><span class="lose">负</span> 2:3</td>
+              <td class="lose">-7</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>方戈 vs 陈庭语</td>
+              <td class="win"><span class="win">胜</span> 3:0</td>
+              <td class="win">+7</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>方戈 vs 热心市民</td>
+              <td class="win"><span class="win">胜</span> 3:2</td>
+              <td class="win">+10</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>方戈 vs 山人打野球</td>
+              <td class="lose"><span class="lose">负</span> 0:3</td>
+              <td class="lose">-13</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="event-group">
+        <h4>📍 202512.07沐乐旗舰店3200双人团体赛</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr>
+              <td>双打</td>
+              <td>王伟铭/方戈 vs 蒋敏123/余老师1</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>方戈 vs 余老师1</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">0</td>
+            </tr>
+            <tr>
+              <td>双打</td>
+              <td>王伟铭/方戈 vs 抬肘正手/洛尘轩</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>方戈 vs 抬肘正手</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-20</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>方戈 vs 一叶飘零</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+6</td>
+            </tr>
+            <tr>
+              <td>双打</td>
+              <td>王伟铭/方戈 vs 蒲世豪/李建洪</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>方戈 vs 蒲世豪</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+16</td>
+            </tr>
+            <tr>
+              <td>双打</td>
+              <td>王伟铭/方戈 vs 下手轻点哦/小寒風</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>方戈 vs 小寒風</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-1</td>
+            </tr>
+            <tr>
+              <td>双打</td>
+              <td>王伟铭/方戈 vs 赵永昌/品墨</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="event-group">
+        <h4>📍 20251122周六星众星乒乓球·乐家广场店1550奖金赛</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr>
+              <td>单打</td>
+              <td>方戈 vs 陈大柱</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+6</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>方戈 vs 康宇洋</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-7</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>方戈 vs haohaoyy</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-7</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>方戈 vs 遇弱则弱</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-13</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>方戈 vs 房东2000</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-7</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card detail-section" id="detail-1">
+      <h2>宋峪轩 (宋峪轩) - 详细数据 <span class="score-badge">1600分</span></h2>
+      <div class="score-info">
+        <span>📊 积分: 当前1600 | 年度最高1513 | 历史最高1613 | 历史最低1294</span>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-item"><div class="stat-value">68.0%</div><div class="stat-label">总胜率</div></div>
+        <div class="stat-item"><div class="stat-value">0.0%</div><div class="stat-label">双打胜率</div></div>
+        <div class="stat-item"><div class="stat-value">30</div><div class="stat-label">总场次</div></div>
+        <div class="stat-item"><div class="stat-value">75.0%</div><div class="stat-label">稳定性</div></div>
+      </div>
+      <div class="chart-container">
+        <canvas id="chart-1"></canvas>
+      </div>
+      <h3>📋 近期对局</h3>
+
+      <div class="event-group">
+        <h4>📍 20260510周天星众星乒乓球·乐家广场店U1500奖金赛</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>宋峪轩 vs 磊陆</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-13</td>
+            </tr>
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>宋峪轩 vs 徐释</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+4</td>
+            </tr>
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>宋峪轩 vs 风中小王子</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+4</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>宋峪轩 vs 赛迪肖工</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+8</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>宋峪轩 vs 小熙熙</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+4</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>宋峪轩 vs 傅椰权</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+3</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>宋峪轩 vs Senthe</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+5</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>宋峪轩 vs 萬12</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+7</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>宋峪轩 vs 五边形战士</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+6</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="event-group">
+        <h4>📍 绵阳新华乒乓球U1550单打积分赛2026-05-03</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>宋峪轩 vs 高镜涛</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-10</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>宋峪轩 vs 贾虫二</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-13</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>宋峪轩 vs 超快乐</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+5</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>宋峪轩 vs 罗郑杭</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+4</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>宋峪轩 vs 梁红彬</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+1</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>宋峪轩 vs 一只长脸鹿</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+3</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>宋峪轩 vs 苏天域</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+3</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>宋峪轩 vs 蒋宇轩3</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+2</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>宋峪轩 vs 文曹棋翔</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+4</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="event-group">
+        <h4>📍 绵阳新华乒乓U1700单打积分赛2026-05-01</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr>
+              <td>单打</td>
+              <td>宋峪轩 vs 陈熙然</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+5</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>宋峪轩 vs 文梓豪</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-6</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>宋峪轩 vs 没放小奶屁</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-2</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>宋峪轩 vs 蓝意然</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+5</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>宋峪轩 vs 正手锁值</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-3</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>宋峪轩 vs 未遇梨衣</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-6</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>宋峪轩 vs 杨竣翔1</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-10</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card detail-section" id="detail-2">
+      <h2>陈晨橙 (陈钰鹏) - 详细数据 <span class="score-badge">1611分</span></h2>
+      <div class="score-info">
+        <span>📊 积分: 当前1611 | 年度最高1531 | 历史最高1621 | 历史最低1435</span>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-item"><div class="stat-value">36.8%</div><div class="stat-label">总胜率</div></div>
+        <div class="stat-item"><div class="stat-value">14.3%</div><div class="stat-label">双打胜率</div></div>
+        <div class="stat-item"><div class="stat-value">20</div><div class="stat-label">总场次</div></div>
+        <div class="stat-item"><div class="stat-value">66.7%</div><div class="stat-label">稳定性</div></div>
+      </div>
+      <div class="chart-container">
+        <canvas id="chart-2"></canvas>
+      </div>
+      <h3>📋 近期对局</h3>
+
+      <div class="event-group">
+        <h4>📍 20260524龙马国球馆双蛋蛋杯三人团（现场组队）</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr>
+              <td>双打</td>
+              <td>陈大柱/陈晨橙 vs 希牛/莽就完了</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-</td>
+            </tr>
+            <tr>
+              <td>双打</td>
+              <td>陈大柱/陈晨橙 vs 吴师师/么嗷毛</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>陈晨橙 vs 小小熙</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>陈晨橙 vs 沉鷙果敢</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-</td>
+            </tr>
+            <tr>
+              <td>双打</td>
+              <td>李长根/陈晨橙 vs 沉鷙果敢/在路上66</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-</td>
+            </tr>
+            <tr>
+              <td>双打</td>
+              <td>陈大柱/陈晨橙 vs 李成大/防不住一点</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="event-group">
+        <h4>📍 20260523青山麓水乒乓球俱乐部U4900三人团体赛</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr>
+              <td>双打</td>
+              <td>真马马/陈晨橙 vs 落叶不凡/擦网宗师</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-</td>
+            </tr>
+            <tr>
+              <td>双打</td>
+              <td>真马马/陈晨橙 vs 王益达/打猪猪</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-</td>
+            </tr>
+            <tr>
+              <td>双打</td>
+              <td>真马马/陈晨橙 vs 王博驭/今日小美</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="event-group">
+        <h4>📍 燎原乒乓20260520U1600单打周赛（每周三）</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>陈晨橙 vs 张勇21</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-6</td>
+            </tr>
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>陈晨橙 vs 成理坤坤</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+10</td>
+            </tr>
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>陈晨橙 vs 车水马龙A</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+10</td>
+            </tr>
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>陈晨橙 vs 失心泪</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+10</td>
+            </tr>
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>陈晨橙 vs 马啸长风</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+10</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>陈晨橙 vs 小酒窝选手</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">0</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>陈晨橙 vs 张勇21</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-6</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>陈晨橙 vs 浪山小妖怪</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-5</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>陈晨橙 vs 约德尓玮玮</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+10</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>陈晨橙 vs 千鸟</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-8</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card detail-section" id="detail-3">
+      <h2>赖家老二 (赖发睿) - 详细数据 <span class="score-badge">1598分</span></h2>
+      <div class="score-info">
+        <span>📊 积分: 当前1598 | 年度最高1538 | 历史最高1598 | 历史最低1498</span>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-item"><div class="stat-value">75.0%</div><div class="stat-label">总胜率</div></div>
+        <div class="stat-item"><div class="stat-value">0.0%</div><div class="stat-label">双打胜率</div></div>
+        <div class="stat-item"><div class="stat-value">30</div><div class="stat-label">总场次</div></div>
+        <div class="stat-item"><div class="stat-value">47.8%</div><div class="stat-label">稳定性</div></div>
+      </div>
+      <div class="chart-container">
+        <canvas id="chart-3"></canvas>
+      </div>
+      <h3>📋 近期对局</h3>
+
+      <div class="event-group">
+        <h4>📍 20260510逐梦俱乐部U1550积分赛</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>赖家老二 vs 王小彬</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+8</td>
+            </tr>
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>赖家老二 vs Donny</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-8</td>
+            </tr>
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>赖家老二 vs 牙医李婷</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+10</td>
+            </tr>
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>赖家老二 vs 皓东</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+6</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>赖家老二 vs Donny</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+10</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>赖家老二 vs 阳永林</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+8</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>赖家老二 vs 新起点运动</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+13</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>赖家老二 vs ID竞技</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+4</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>赖家老二 vs 颜料</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-8</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>赖家老二 vs tyjyjj</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+6</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="event-group">
+        <h4>📍 成都在线承熹开球网20260503U1550单打赛</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>赖家老二 vs HouDK</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-13</td>
+            </tr>
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>赖家老二 vs 理塘王</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+4</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>赖家老二 vs 陈晨橙</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-7</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>赖家老二 vs 奉翔</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+4</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>赖家老二 vs 樊振吸</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+3</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>赖家老二 vs 陈通哲</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+7</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>赖家老二 vs 牙痛要命</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+5</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>赖家老二 vs 顺风顺水</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+2</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="event-group">
+        <h4>📍 20260418逐梦俱乐部U1550积分赛</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr>
+              <td>单打</td>
+              <td>赖家老二 vs 怪胶小登</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-6</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>赖家老二 vs 文刀湖</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+5</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>赖家老二 vs 柠檬1</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+3</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>赖家老二 vs 王洪金</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-7</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>赖家老二 vs 熊幕亦</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+7</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>赖家老二 vs 樊振吸</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+4</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card detail-section" id="detail-4">
+      <h2>陈思汗1 (陈思汗) - 详细数据 <span class="score-badge">1605分</span></h2>
+      <div class="score-info">
+        <span>📊 积分: 当前1605 | 年度最高1535 | 历史最高1625 | 历史最低1486</span>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-item"><div class="stat-value">60.9%</div><div class="stat-label">总胜率</div></div>
+        <div class="stat-item"><div class="stat-value">0.0%</div><div class="stat-label">双打胜率</div></div>
+        <div class="stat-item"><div class="stat-value">30</div><div class="stat-label">总场次</div></div>
+        <div class="stat-item"><div class="stat-value">50.0%</div><div class="stat-label">稳定性</div></div>
+      </div>
+      <div class="chart-container">
+        <canvas id="chart-4"></canvas>
+      </div>
+      <h3>📋 近期对局</h3>
+
+      <div class="event-group">
+        <h4>📍 20260523龙马国球馆1600分段赛</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>陈思汗1 vs 仲森</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>陈思汗1 vs 梵殇惘</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>陈思汗1 vs 榴莲树</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>陈思汗1 vs 镜如</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>陈思汗1 vs 一挡就擦边</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>陈思汗1 vs 李函珂</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>陈思汗1 vs 小毛圈</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>陈思汗1 vs 福城汤</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="event-group">
+        <h4>📍 20260516GUO乒阵地U1600单打积分赛高奖金</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>陈思汗1 vs 镜如</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-7</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>陈思汗1 vs 陈明权</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+2</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>陈思汗1 vs 女王小平</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+8</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>陈思汗1 vs 混分大魔王</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-7</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>陈思汗1 vs 角落里</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+1</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>陈思汗1 vs 得哒哒哒</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-8</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>陈思汗1 vs 我是最强的</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+6</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="event-group">
+        <h4>📍 成都在线承熹开球网20260514U1600单打赛</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>陈思汗1 vs 最佳歌手</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-13</td>
+            </tr>
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>陈思汗1 vs 恶魔之眼</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+5</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>陈思汗1 vs 秦艺涛</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-7</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>陈思汗1 vs 寒鸦</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+5</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>陈思汗1 vs 新手蟹</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+2</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>陈思汗1 vs 小魏你好</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+7</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>陈思汗1 vs 青岛教徒</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+5</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>陈思汗1 vs 雨下听＾风</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+2</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card detail-section" id="detail-5">
+      <h2>小河马 (马晓晨) - 详细数据 <span class="score-badge">1599分</span></h2>
+      <div class="score-info">
+        <span>📊 积分: 当前1599 | 年度最高1530 | 历史最高1620 | 历史最低1465</span>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-item"><div class="stat-value">66.7%</div><div class="stat-label">总胜率</div></div>
+        <div class="stat-item"><div class="stat-value">0.0%</div><div class="stat-label">双打胜率</div></div>
+        <div class="stat-item"><div class="stat-value">30</div><div class="stat-label">总场次</div></div>
+        <div class="stat-item"><div class="stat-value">42.3%</div><div class="stat-label">稳定性</div></div>
+      </div>
+      <div class="chart-container">
+        <canvas id="chart-5"></canvas>
+      </div>
+      <h3>📋 近期对局</h3>
+
+      <div class="event-group">
+        <h4>📍 20260524周日星众星乒乓球·乐家广场店U1600奖金赛</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>小河马 vs 超跑战神</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-</td>
+            </tr>
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>小河马 vs 杨傑</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">-</td>
+            </tr>
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>小河马 vs 大陆陆</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>小河马 vs 老蒋不老</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>小河马 vs 超跑战神</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>小河马 vs 1米阳光</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>小河马 vs 晋梓轩</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>小河马 vs 昨日重见</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>小河马 vs 伊森秋歌</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">-</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="event-group">
+        <h4>📍 20260524周日星众星乒乓球·乐家广场店U1550奖金赛</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>小河马 vs 超能蒙</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-</td>
+            </tr>
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>小河马 vs 小刘爱乒乓</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">-</td>
+            </tr>
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>小河马 vs 吴东欧</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">-</td>
+            </tr>
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>小河马 vs 师范生</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>小河马 vs 飞身就爆摆</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>小河马 vs 李成大</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>小河马 vs 爱康康</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>小河马 vs 左直菜j</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>小河马 vs 老蒋不老</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">-</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="event-group">
+        <h4>📍 20260523周六星众星乒乓球·乐家广场店U1550奖金赛</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>小河马 vs L小小梁</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-</td>
+            </tr>
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>小河马 vs 半晌逍遥</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>小河马 vs 海哥的嘛</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>小河马 vs 陈嘉睿</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>小河马 vs 老邱1128</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>小河马 vs 新手蟹</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>小河马 vs 魔力先锋</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>小河马 vs 车承旭</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>小河马 vs 稳住能赢的</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">-</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card detail-section" id="detail-6">
+      <h2>翟贤 (翟贤) - 详细数据 <span class="score-badge">1610分</span></h2>
+      <div class="score-info">
+        <span>📊 积分: 当前1610 | 年度最高1535 | 历史最高1615 | 历史最低1311</span>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-item"><div class="stat-value">61.9%</div><div class="stat-label">总胜率</div></div>
+        <div class="stat-item"><div class="stat-value">0.0%</div><div class="stat-label">双打胜率</div></div>
+        <div class="stat-item"><div class="stat-value">30</div><div class="stat-label">总场次</div></div>
+        <div class="stat-item"><div class="stat-value">45.0%</div><div class="stat-label">稳定性</div></div>
+      </div>
+      <div class="chart-container">
+        <canvas id="chart-6"></canvas>
+      </div>
+      <h3>📋 近期对局</h3>
+
+      <div class="event-group">
+        <h4>📍 20260516周六星众星乒乓球·乐家广场店U1600奖金赛 大循环</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>翟贤 vs 西门崔雪</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-5</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>翟贤 vs 林春岐</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+4</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>翟贤 vs 马啸长风</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+7</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>翟贤 vs 杨傑</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+8</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>翟贤 vs 伊布维奇</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">0</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>翟贤 vs 房东2000</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-10</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>翟贤 vs 南迦巴瓦001</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+6</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="event-group">
+        <h4>📍 20260503周日星众星乒乓球·乐家广场店U1650奖金赛</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>翟贤 vs 星辰大海79</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-5</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>翟贤 vs 仲森</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+16</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>翟贤 vs 鄢裕航</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-10</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>翟贤 vs 万兽之王07</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+7</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>翟贤 vs 反正都不会</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+10</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>翟贤 vs 乐言16</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-4</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>翟贤 vs 成都唐辉</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-7</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="event-group">
+        <h4>📍 20260501周五星众星乒乓球·乐家广场店U1550奖金赛</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>翟贤 vs 妙不可言1</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-10</td>
+            </tr>
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>翟贤 vs 陈佳丽</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+8</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>翟贤 vs 薯条1</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+10</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>翟贤 vs 仔</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+7</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>翟贤 vs 奶奶</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+3</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>翟贤 vs 咚咚不削球</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-13</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>翟贤 vs 你最强</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+5</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card detail-section" id="detail-7">
+      <h2>张加菊 (张加菊) - 详细数据 <span class="score-badge">1604分</span></h2>
+      <div class="score-info">
+        <span>📊 积分: 当前1604 | 年度最高1535 | 历史最高1605 | 历史最低1384</span>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-item"><div class="stat-value">55.6%</div><div class="stat-label">总胜率</div></div>
+        <div class="stat-item"><div class="stat-value">0.0%</div><div class="stat-label">双打胜率</div></div>
+        <div class="stat-item"><div class="stat-value">30</div><div class="stat-label">总场次</div></div>
+        <div class="stat-item"><div class="stat-value">50.0%</div><div class="stat-label">稳定性</div></div>
+      </div>
+      <div class="chart-container">
+        <canvas id="chart-7"></canvas>
+      </div>
+      <h3>📋 近期对局</h3>
+
+      <div class="event-group">
+        <h4>📍 5.23“徳众欢乐之夜”乒乓挑战赛</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs 十月丰藏</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs 七边形战士</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs 王睿杰</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs 思绪结成冰</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs 善客</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs btndl</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">-</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs 葛大林</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">-</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="event-group">
+        <h4>📍 5.16“徳众欢乐之夜”乒乓挑战赛</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs 张娟5</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+3</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs XXDanielXX</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+3</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs 杨银平</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-4</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs 十月丰藏</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+20</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs 王玉鹏</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-4</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs 谲变星流王</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+10</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs 因吹斯汀</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+4</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs 任丘张继科</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-20</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs 李永闯</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-6</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs 李承扬</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-6</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="event-group">
+        <h4>📍 5.9“徳众欢乐之夜”乒乓挑战赛</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs 刘启刚滑县</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-6</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs o咚咚大王o</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+6</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs 郭不易58</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+8</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs 善客</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+13</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs 李永闯</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-4</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs 想飞的小李</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+10</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs 孙兴上</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-20</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs A李一言</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-8</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs 陈德</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-8</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>张加菊 vs 谲变星流王</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+6</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card detail-section" id="detail-8">
+      <h2>阿原 (陈原) - 详细数据 <span class="score-badge">1605分</span></h2>
+      <div class="score-info">
+        <span>📊 积分: 当前1605 | 年度最高1541 | 历史最高1621 | 历史最低1518</span>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-item"><div class="stat-value">60.0%</div><div class="stat-label">总胜率</div></div>
+        <div class="stat-item"><div class="stat-value">0.0%</div><div class="stat-label">双打胜率</div></div>
+        <div class="stat-item"><div class="stat-value">30</div><div class="stat-label">总场次</div></div>
+        <div class="stat-item"><div class="stat-value">41.7%</div><div class="stat-label">稳定性</div></div>
+      </div>
+      <div class="chart-container">
+        <canvas id="chart-8"></canvas>
+      </div>
+      <h3>📋 近期对局</h3>
+
+      <div class="event-group">
+        <h4>📍 20260506周三星众星乒乓球·乐家广场店U1600奖金赛</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr>
+              <td>单打</td>
+              <td>阿原 vs 福龙马</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+6</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>阿原 vs 花儿朵朵开</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+7</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>阿原 vs 水滴918</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+1</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>阿原 vs 小凡凡</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-7</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>阿原 vs 仲森</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+16</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>阿原 vs 张海新</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-6</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>阿原 vs Cc_</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+5</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>阿原 vs 真不买了</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+3</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>阿原 vs 冷梦</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-6</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>阿原 vs 镜如</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+16</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="event-group">
+        <h4>📍 20260427周一星众星乒乓球·乐家广场店U1600奖金赛</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr>
+              <td>单打</td>
+              <td>阿原 vs 菜鸟哇</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+8</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>阿原 vs 最佳歌手</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-7</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>阿原 vs 请一直奔跑</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-6</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>阿原 vs 歌我郭</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+7</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>阿原 vs 活力坝坝王</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+13</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>阿原 vs 申十一</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+13</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>阿原 vs 张海新</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-4</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>阿原 vs 孔祥河</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-5</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="event-group">
+        <h4>📍 20260425龙马国球馆樱桃杯1600分段赛</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>阿原 vs 赵清旖</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-5</td>
+            </tr>
+            <tr class="knockout">
+              <td>单打 <span class="tag tag-knockout">淘汰赛</span></td>
+              <td>阿原 vs 1025S</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+3</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>阿原 vs 张宇婷</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+8</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>阿原 vs 顺风前行</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-8</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>阿原 vs zhengjun</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+10</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>阿原 vs 仔</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-8</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>阿原 vs 徐先升</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+8</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card detail-section" id="detail-9">
+      <h2>Yaann (严俊杰) - 详细数据 <span class="score-badge">1617分</span></h2>
+      <div class="score-info">
+        <span>📊 积分: 当前1617 | 年度最高1538 | 历史最高1638 | 历史最低1471</span>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-item"><div class="stat-value">52.0%</div><div class="stat-label">总胜率</div></div>
+        <div class="stat-item"><div class="stat-value">0.0%</div><div class="stat-label">双打胜率</div></div>
+        <div class="stat-item"><div class="stat-value">30</div><div class="stat-label">总场次</div></div>
+        <div class="stat-item"><div class="stat-value">45.8%</div><div class="stat-label">稳定性</div></div>
+      </div>
+      <div class="chart-container">
+        <canvas id="chart-9"></canvas>
+      </div>
+      <h3>📋 近期对局</h3>
+
+      <div class="event-group">
+        <h4>📍 20260521银杏乒乓分段积分赛</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr>
+              <td>单打</td>
+              <td>Yaann vs Cc_</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+6</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>Yaann vs 肖球手</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+4</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>Yaann vs 昨日重见</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+8</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>Yaann vs 岳伟YYM</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+7</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>Yaann vs 王芊沣</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-3</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>Yaann vs 风几里</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+6</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>Yaann vs 这是哪个</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+25</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>Yaann vs 冯立策</td>
+              <td class="win"><span class="win">胜</span> 2:1</td>
+              <td class="win">+16</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>Yaann vs 高原罗一刀</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-6</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="event-group">
+        <h4>📍 20260513银杏乒乓分段积分赛</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr>
+              <td>单打</td>
+              <td>Yaann vs 夏野</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+5</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>Yaann vs 梦想起航</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-6</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>Yaann vs 六一居主</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-2</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>Yaann vs 乒乓快乐球</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-6</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>Yaann vs 陈风玄</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">0</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>Yaann vs 昨日重见</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-4</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>Yaann vs 杨傑</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+10</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>Yaann vs 又江乔</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-8</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>Yaann vs 恿哥</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+8</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="event-group">
+        <h4>📍 20260512银杏乒乓分段积分赛</h4>
+        <table>
+          <thead><tr><th>类型</th><th>对阵</th><th>胜负</th><th>积分</th></tr></thead>
+          <tbody>
+
+            <tr>
+              <td>单打</td>
+              <td>Yaann vs 陈风玄</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+1</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>Yaann vs 昨日重见</td>
+              <td class="lose"><span class="lose">负</span> 1:2</td>
+              <td class="lose">-4</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>Yaann vs 水门老师</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">0</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>Yaann vs 吴小弟</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-16</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>Yaann vs 刘不梭</td>
+              <td class="win"><span class="win">胜</span> 2:0</td>
+              <td class="win">+5</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>Yaann vs 观球无心</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-7</td>
+            </tr>
+            <tr>
+              <td>单打</td>
+              <td>Yaann vs 乒乓快乐球</td>
+              <td class="lose"><span class="lose">负</span> 0:2</td>
+              <td class="lose">-7</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <script>
+    function showDetail(index) {
+      document.querySelectorAll('.detail-section').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.player-card').forEach(el => el.classList.remove('active'));
+      document.getElementById('detail-' + index).classList.add('active');
+      document.getElementById('card-' + index).classList.add('active');
+      window.scrollTo(0, document.getElementById('detail-' + index).offsetTop - 20);
+    }
+
+    // 渲染图表
+
+    new Chart(document.getElementById('chart-0'), {
+      type: 'bar',
+      data: {
+        labels: ['单打', '双打', '团体'],
+        datasets: [{
+          label: '胜率',
+          data: [36.0, 80.0, 55.2],
+          backgroundColor: ['#1890ff', '#52c41a', '#fa8c16']
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+    new Chart(document.getElementById('chart-1'), {
+      type: 'bar',
+      data: {
+        labels: ['单打', '双打', '团体'],
+        datasets: [{
+          label: '胜率',
+          data: [56.7, 0.0, 73.3],
+          backgroundColor: ['#1890ff', '#52c41a', '#fa8c16']
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+    new Chart(document.getElementById('chart-2'), {
+      type: 'bar',
+      data: {
+        labels: ['单打', '双打', '团体'],
+        datasets: [{
+          label: '胜率',
+          data: [46.2, 14.3, 36.8],
+          backgroundColor: ['#1890ff', '#52c41a', '#fa8c16']
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+    new Chart(document.getElementById('chart-3'), {
+      type: 'bar',
+      data: {
+        labels: ['单打', '双打', '团体'],
+        datasets: [{
+          label: '胜率',
+          data: [60.0, 0.0, 73.3],
+          backgroundColor: ['#1890ff', '#52c41a', '#fa8c16']
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+    new Chart(document.getElementById('chart-4'), {
+      type: 'bar',
+      data: {
+        labels: ['单打', '双打', '团体'],
+        datasets: [{
+          label: '胜率',
+          data: [46.7, 0.0, 56.7],
+          backgroundColor: ['#1890ff', '#52c41a', '#fa8c16']
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+    new Chart(document.getElementById('chart-5'), {
+      type: 'bar',
+      data: {
+        labels: ['单打', '双打', '团体'],
+        datasets: [{
+          label: '胜率',
+          data: [60.0, 0.0, 66.7],
+          backgroundColor: ['#1890ff', '#52c41a', '#fa8c16']
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+    new Chart(document.getElementById('chart-6'), {
+      type: 'bar',
+      data: {
+        labels: ['单打', '双打', '团体'],
+        datasets: [{
+          label: '胜率',
+          data: [43.3, 0.0, 63.3],
+          backgroundColor: ['#1890ff', '#52c41a', '#fa8c16']
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+    new Chart(document.getElementById('chart-7'), {
+      type: 'bar',
+      data: {
+        labels: ['单打', '双打', '团体'],
+        datasets: [{
+          label: '胜率',
+          data: [50.0, 0.0, 58.6],
+          backgroundColor: ['#1890ff', '#52c41a', '#fa8c16']
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+    new Chart(document.getElementById('chart-8'), {
+      type: 'bar',
+      data: {
+        labels: ['单打', '双打', '团体'],
+        datasets: [{
+          label: '胜率',
+          data: [50.0, 0.0, 50.0],
+          backgroundColor: ['#1890ff', '#52c41a', '#fa8c16']
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+    new Chart(document.getElementById('chart-9'), {
+      type: 'bar',
+      data: {
+        labels: ['单打', '双打', '团体'],
+        datasets: [{
+          label: '胜率',
+          data: [43.3, 0.0, 56.7],
+          backgroundColor: ['#1890ff', '#52c41a', '#fa8c16']
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  </script>
+</body>
+</html>

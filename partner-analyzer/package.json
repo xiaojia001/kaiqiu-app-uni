@@ -1,0 +1,14 @@
+{
+  "name": "pingpong-partner-analyzer",
+  "version": "1.0.0",
+  "description": "分析乒乓球双打队友适合度",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "cheerio": "^1.0.0-rc.12"
+  }
+}

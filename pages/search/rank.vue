@@ -120,8 +120,8 @@
 			width: uni.upx2px(110),
 		},
 		{
-			name: 'minscore',
-			label: '最低积分',
+			name: 'maxScoreTheYear',
+			label: '年度积分',
 			align: 'center',
 			width: uni.upx2px(120),
 		},
